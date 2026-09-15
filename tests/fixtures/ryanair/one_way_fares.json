@@ -1,0 +1,58 @@
+{
+  "arrivalAirportCategories": null,
+  "fares": [
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Czech Republic",
+          "iataCode": "PRG",
+          "name": "Prague",
+          "seoName": "prague",
+          "city": {
+            "code": "PRAGUE",
+            "countryCode": "cz",
+            "name": "Prague"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "United Kingdom",
+          "iataCode": "STN",
+          "name": "London Stansted",
+          "seoName": "london-stansted",
+          "city": {
+            "code": "LONDON",
+            "countryCode": "gb",
+            "macCode": "LON",
+            "name": "London"
+          }
+        },
+        "departureDate": "2026-11-20T15:30:00",
+        "arrivalDate": "2026-11-20T16:30:00",
+        "price": {
+          "value": 567.63,
+          "valueMainUnit": "567",
+          "valueFractionalUnit": "63",
+          "currencyCode": "CZK",
+          "currencySymbol": "Kč"
+        },
+        "flightKey": "FR~1014~ ~~PRG~11/20/2026 15:30~STN~11/20/2026 16:30~~",
+        "flightNumber": "FR1014",
+        "previousPrice": null,
+        "priceUpdated": 1789475432000
+      },
+      "summary": {
+        "price": {
+          "value": 567.63,
+          "valueMainUnit": "567",
+          "valueFractionalUnit": "63",
+          "currencyCode": "CZK",
+          "currencySymbol": "Kč"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    }
+  ],
+  "nextPage": null,
+  "size": 1
+}

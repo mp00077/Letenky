@@ -1,0 +1,91 @@
+import sqlite3
+from datetime import timedelta
+
+from letenky.domain.errors import DuplicateWatch
+from letenky.domain.price import timestamp
+from letenky.domain.watch import Watch
+
+
+class WatchRepository:
+    def __init__(self, database):
+        self.database = database
+
+    def add(self, offer):
+        now = timestamp(offer.observed_at)
+        try:
+            with self.database.connect() as db:
+                db.execute("""INSERT INTO flights
+                    (origin,destination,departure_date,flight_number,departure_local,arrival_local,departure_utc)
+                    VALUES (?,?,?,?,?,?,?) ON CONFLICT(origin,destination,departure_date,flight_number)
+                    DO UPDATE SET departure_local=excluded.departure_local,
+                    arrival_local=excluded.arrival_local, departure_utc=excluded.departure_utc""",
+                    (offer.origin, offer.destination, offer.departure.date().isoformat(),
+                     offer.flight_number, offer.departure.isoformat(), offer.arrival.isoformat(),
+                     timestamp(offer.departure)))
+                flight_id = db.execute("""SELECT id FROM flights WHERE origin=? AND destination=?
+                    AND departure_date=? AND flight_number=?""", (offer.origin, offer.destination,
+                    offer.departure.date().isoformat(), offer.flight_number)).fetchone()[0]
+                watch_id = db.execute("""INSERT INTO watches
+                    (flight_id,currency,source,created_at,next_check_at) VALUES (?,?,?,?,?)""",
+                    (flight_id, offer.currency, offer.source, now,
+                     timestamp(offer.observed_at + timedelta(hours=3)))).lastrowid
+                run_id = db.execute("""INSERT INTO check_runs
+                    (watch_id,started_at,finished_at,status) VALUES (?,?,?,'ok')""",
+                    (watch_id, now, now)).lastrowid
+                self.insert_observation(db, watch_id, flight_id, run_id, offer)
+                return watch_id
+        except sqlite3.IntegrityError as exc:
+            if "UNIQUE constraint failed: watches." in str(exc):
+                raise DuplicateWatch("Tento let již sledujete v této měně.") from exc
+            raise
+
+    @staticmethod
+    def insert_observation(db, watch_id, flight_id, run_id, offer):
+        db.execute("""INSERT INTO price_observations
+            (watch_id,flight_id,check_run_id,observed_at,amount_minor,currency,source_updated_at)
+            VALUES (?,?,?,?,?,?,?)""", (watch_id, flight_id, run_id, timestamp(offer.observed_at),
+            offer.amount_minor, offer.currency,
+            timestamp(offer.source_updated_at) if offer.source_updated_at else None))
+
+    def list(self):
+        with self.database.connect() as db:
+            rows = db.execute("""SELECT w.id,w.flight_id,f.origin,f.destination,f.departure_date,
+                f.flight_number,f.departure_local,f.departure_utc,w.currency,w.state,w.next_check_at,
+                c.status last_status,c.error last_error,c.finished_at checked_at,
+                p.amount_minor latest_amount,p.observed_at latest_at,
+                m.amount_minor minimum_amount,m.observed_at minimum_at
+                FROM watches w JOIN flights f ON f.id=w.flight_id
+                LEFT JOIN check_runs c ON c.id=(SELECT id FROM check_runs WHERE watch_id=w.id ORDER BY id DESC LIMIT 1)
+                LEFT JOIN price_observations p ON p.id=(SELECT id FROM price_observations WHERE watch_id=w.id ORDER BY observed_at DESC,id DESC LIMIT 1)
+                LEFT JOIN price_observations m ON m.id=(SELECT id FROM price_observations WHERE watch_id=w.id ORDER BY amount_minor,observed_at,id LIMIT 1)
+                ORDER BY f.departure_utc,w.id""").fetchall()
+        return [Watch(**dict(row)) for row in rows]
+
+    def get(self, watch_id):
+        return next((watch for watch in self.list() if watch.id == watch_id), None)
+
+    def due(self, now):
+        return [watch for watch in self.list() if watch.state == "active" and watch.next_check_at <= timestamp(now)]
+
+    def expire(self, now):
+        with self.database.connect() as db:
+            db.execute("""UPDATE watches SET state='completed' WHERE state!='completed'
+                AND flight_id IN (SELECT id FROM flights WHERE departure_utc<=?)""", (timestamp(now),))
+
+    def set_paused(self, watch_id, paused, now):
+        with self.database.connect() as db:
+            db.execute("""UPDATE watches SET state=?,next_check_at=? WHERE id=? AND state!='completed'""",
+                       ("paused" if paused else "active", timestamp(now), watch_id))
+
+    def record_check(self, watch, started_at, finished_at, status, error=None, offer=None):
+        with self.database.connect() as db:
+            run_id = db.execute("""INSERT INTO check_runs
+                (watch_id,started_at,finished_at,status,error) VALUES (?,?,?,?,?)""",
+                (watch.id, timestamp(started_at), timestamp(finished_at), status, error)).lastrowid
+            if offer is not None:
+                self.insert_observation(db, watch.id, watch.flight_id, run_id, offer)
+                db.execute("UPDATE flights SET departure_local=?,arrival_local=?,departure_utc=? WHERE id=?",
+                           (offer.departure.isoformat(), offer.arrival.isoformat(),
+                            timestamp(offer.departure), watch.flight_id))
+            db.execute("UPDATE watches SET next_check_at=? WHERE id=?",
+                       (timestamp(finished_at + timedelta(hours=3)), watch.id))

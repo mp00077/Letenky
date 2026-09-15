@@ -1,0 +1,4 @@
+<RCC><qresource prefix="/">
+ <file>icons/plane.svg</file>
+ <file>styles/app.qss</file>
+</qresource></RCC>

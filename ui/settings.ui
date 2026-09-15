@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsDialog</class>
+ <widget class="QDialog" name="SettingsDialog">
+  <property name="windowTitle"><string>Nastavení</string></property>
+  <property name="minimumSize"><size><width>510</width><height>230</height></size></property>
+  <layout class="QVBoxLayout" name="layout">
+   <item><widget class="QLabel" name="currencyLabel"><property name="text"><string>Výchozí měna pro nová sledování</string></property></widget></item>
+   <item><widget class="QComboBox" name="currencyCombo"/></item>
+   <item><widget class="QCheckBox" name="trayCheck"><property name="text"><string>Při zavření okna pokračovat v systémové liště</string></property></widget></item>
+   <item><widget class="QLabel" name="infoLabel"><property name="text"><string>Kontroly probíhají každé 3 hodiny při spuštěné aplikaci. Po probuzení počítače se provede zmeškaná kontrola jednou.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+   <item><widget class="QLabel" name="pathLabel"><property name="wordWrap"><bool>true</bool></property><property name="textInteractionFlags"><set>Qt::TextSelectableByMouse</set></property></widget></item>
+   <item><widget class="QDialogButtonBox" name="buttonBox"><property name="standardButtons"><set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set></property></widget></item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

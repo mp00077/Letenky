@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.test-data/
+*.sqlite3*
+*.log*
+src/letenky/gui/generated/ui_*.py
+src/letenky/gui/generated/resources_rc.py

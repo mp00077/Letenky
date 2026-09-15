@@ -1,0 +1,1122 @@
+[
+  {
+    "code": "AAR",
+    "name": "Aarhus",
+    "timeZone": "Europe/Copenhagen"
+  },
+  {
+    "code": "ABZ",
+    "name": "Aberdeen",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "ACE",
+    "name": "Lanzarote",
+    "timeZone": "Atlantic/Canary"
+  },
+  {
+    "code": "AGA",
+    "name": "Agadir",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "AGP",
+    "name": "Malaga",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "AHO",
+    "name": "Alghero",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "ALC",
+    "name": "Alicante",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "AMM",
+    "name": "Amman Jordan",
+    "timeZone": "Asia/Amman"
+  },
+  {
+    "code": "AMS",
+    "name": "Amsterdam",
+    "timeZone": "Europe/Amsterdam"
+  },
+  {
+    "code": "AOI",
+    "name": "Ancona",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "ARN",
+    "name": "Stockholm Arlanda",
+    "timeZone": "Europe/Stockholm"
+  },
+  {
+    "code": "ATH",
+    "name": "Athens",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "BBU",
+    "name": "Bucharest Baneasa ",
+    "timeZone": "Europe/Bucharest"
+  },
+  {
+    "code": "BCN",
+    "name": "Barcelona",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "BDS",
+    "name": "Brindisi",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "BEM",
+    "name": "Beni Mellal",
+    "timeZone": "Africa/Bangui"
+  },
+  {
+    "code": "BER",
+    "name": "Berlin Brandenburg",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "BFS",
+    "name": "Belfast International",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "BGY",
+    "name": "Milan Bergamo",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "BHX",
+    "name": "Birmingham",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "BIQ",
+    "name": "Biarritz",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "BJV",
+    "name": "Bodrum",
+    "timeZone": "Europe/Istanbul"
+  },
+  {
+    "code": "BLQ",
+    "name": "Bologna",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "BNX",
+    "name": "Banja Luka",
+    "timeZone": "Europe/Sarajevo"
+  },
+  {
+    "code": "BOH",
+    "name": "Bournemouth",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "BOJ",
+    "name": "Burgas",
+    "timeZone": "Europe/Sofia"
+  },
+  {
+    "code": "BRE",
+    "name": "Bremen",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "BRI",
+    "name": "Bari",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "BRQ",
+    "name": "Brno",
+    "timeZone": "Europe/Prague"
+  },
+  {
+    "code": "BRS",
+    "name": "Bristol",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "BRU",
+    "name": "Brussels",
+    "timeZone": "Europe/Brussels"
+  },
+  {
+    "code": "BSL",
+    "name": "Basel",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "BTS",
+    "name": "Bratislava",
+    "timeZone": "Europe/Bratislava"
+  },
+  {
+    "code": "BUD",
+    "name": "Budapest",
+    "timeZone": "Europe/Budapest"
+  },
+  {
+    "code": "BVA",
+    "name": "Paris Beauvais",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "BVE",
+    "name": "Brive",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "BZG",
+    "name": "Bydgoszcz",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "BZR",
+    "name": "Beziers Cap d'Agde",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "CAG",
+    "name": "Cagliari",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "CCF",
+    "name": "Carcassonne",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "CDT",
+    "name": "Castellon (Valencia)",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "CFU",
+    "name": "Corfu",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "CGN",
+    "name": "Cologne",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "CHQ",
+    "name": "Chania",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "CIA",
+    "name": "Rome Ciampino",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "CLJ",
+    "name": "Cluj",
+    "timeZone": "Europe/Bucharest"
+  },
+  {
+    "code": "CPH",
+    "name": "Copenhagen",
+    "timeZone": "Europe/Copenhagen"
+  },
+  {
+    "code": "CRL",
+    "name": "Brussels Charleroi",
+    "timeZone": "Europe/Brussels"
+  },
+  {
+    "code": "CRV",
+    "name": "Crotone",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "CTA",
+    "name": "Catania",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "CUF",
+    "name": "Cuneo",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "CWL",
+    "name": "Cardiff",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "DBV",
+    "name": "Dubrovnik",
+    "timeZone": "Europe/Zagreb"
+  },
+  {
+    "code": "DLE",
+    "name": "Dole",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "DLM",
+    "name": "Dalaman",
+    "timeZone": "Europe/Istanbul"
+  },
+  {
+    "code": "DUB",
+    "name": "Dublin",
+    "timeZone": "Europe/Dublin"
+  },
+  {
+    "code": "EDI",
+    "name": "Edinburgh",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "EFL",
+    "name": "Kefalonia",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "EGC",
+    "name": "Bergerac",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "EIN",
+    "name": "Eindhoven",
+    "timeZone": "Europe/Amsterdam"
+  },
+  {
+    "code": "EMA",
+    "name": "East Midlands",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "ERH",
+    "name": "Errachidia",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "ESU",
+    "name": "Essaouira",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "EXT",
+    "name": "Exeter",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "FAO",
+    "name": "Faro",
+    "timeZone": "Europe/Lisbon"
+  },
+  {
+    "code": "FCO",
+    "name": "Rome Fiumicino",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "FDH",
+    "name": "Friedrichshafen",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "FEZ",
+    "name": "Fez",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "FKB",
+    "name": "Karlsruhe / Baden-Baden",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "FMM",
+    "name": "Memmingen",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "FMO",
+    "name": "Münster",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "FNC",
+    "name": "Madeira Funchal",
+    "timeZone": "Atlantic/Madeira"
+  },
+  {
+    "code": "FNI",
+    "name": "Nimes",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "FRL",
+    "name": "Bologna Forlí-Ravenna",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "FSC",
+    "name": "Figari-Corsica",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "FUE",
+    "name": "Fuerteventura",
+    "timeZone": "Atlantic/Canary"
+  },
+  {
+    "code": "GDN",
+    "name": "Gdansk",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "GLA",
+    "name": "Glasgow",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "GNB",
+    "name": "Grenoble",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "GOA",
+    "name": "Genoa",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "GOT",
+    "name": "Göteborg Landvetter",
+    "timeZone": "Europe/Stockholm"
+  },
+  {
+    "code": "GRO",
+    "name": "Barcelona Girona",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "HAM",
+    "name": "Hamburg",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "HEL",
+    "name": "Helsinki",
+    "timeZone": "Europe/Helsinki"
+  },
+  {
+    "code": "HER",
+    "name": "Heraklion Crete",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "HHN",
+    "name": "Frankfurt Hahn",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "IAS",
+    "name": "Iasi",
+    "timeZone": "Europe/Bucharest"
+  },
+  {
+    "code": "IBZ",
+    "name": "Ibiza",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "INI",
+    "name": "Nis",
+    "timeZone": "Europe/Belgrade"
+  },
+  {
+    "code": "JMK",
+    "name": "Mykonos",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "JSI",
+    "name": "Skiathos",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "JTR",
+    "name": "Santorini",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "KGS",
+    "name": "Kos",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "KIR",
+    "name": "Kerry",
+    "timeZone": "Europe/Dublin"
+  },
+  {
+    "code": "KLU",
+    "name": "Klagenfurt",
+    "timeZone": "Europe/Vienna"
+  },
+  {
+    "code": "KLX",
+    "name": "Kalamata",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "KRK",
+    "name": "Krakow",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "KSC",
+    "name": "Kosice",
+    "timeZone": "Europe/Bratislava"
+  },
+  {
+    "code": "KTW",
+    "name": "Katowice",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "KUN",
+    "name": "Kaunas",
+    "timeZone": "Europe/Vilnius"
+  },
+  {
+    "code": "LBA",
+    "name": "Leeds Bradford",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "LBC",
+    "name": "Lubeck",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "LCA",
+    "name": "Larnaca",
+    "timeZone": "Asia/Nicosia"
+  },
+  {
+    "code": "LCJ",
+    "name": "Lodz",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "LDE",
+    "name": "Lourdes–Pyrenees",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "LDY",
+    "name": "Derry",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "LEI",
+    "name": "Almeria",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "LGW",
+    "name": "London Gatwick",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "LIG",
+    "name": "Limoges",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "LIL",
+    "name": "Lille",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "LIS",
+    "name": "Lisbon",
+    "timeZone": "Europe/Lisbon"
+  },
+  {
+    "code": "LNZ",
+    "name": "Linz",
+    "timeZone": "Europe/Vienna"
+  },
+  {
+    "code": "LPA",
+    "name": "Gran Canaria",
+    "timeZone": "Atlantic/Canary"
+  },
+  {
+    "code": "LPL",
+    "name": "Liverpool",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "LRH",
+    "name": "La Rochelle",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "LTN",
+    "name": "London Luton",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "LUX",
+    "name": "Luxembourg",
+    "timeZone": "Europe/Luxembourg"
+  },
+  {
+    "code": "LUZ",
+    "name": "Lublin",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "LXS",
+    "name": "Lemnos",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "MAD",
+    "name": "Madrid",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "MAH",
+    "name": "Menorca",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "MAN",
+    "name": "Manchester",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "MLA",
+    "name": "Malta",
+    "timeZone": "Europe/Malta"
+  },
+  {
+    "code": "MME",
+    "name": "Teesside",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "MMX",
+    "name": "Malmo",
+    "timeZone": "Europe/Stockholm"
+  },
+  {
+    "code": "MRS",
+    "name": "Marseille",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "MXP",
+    "name": "Milan Malpensa",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "NAP",
+    "name": "Naples",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "NCE",
+    "name": "Nice",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "NCL",
+    "name": "Newcastle",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "NDR",
+    "name": "Nador",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "NOC",
+    "name": "Knock",
+    "timeZone": "Europe/Dublin"
+  },
+  {
+    "code": "NQY",
+    "name": "Newquay Cornwall",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "NRN",
+    "name": "Dusseldorf Weeze",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "NTE",
+    "name": "Nantes",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "NUE",
+    "name": "Nuremberg",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "NWI",
+    "name": "Norwich",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "OLB",
+    "name": "Olbia",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "OPO",
+    "name": "Porto",
+    "timeZone": "Europe/Lisbon"
+  },
+  {
+    "code": "ORK",
+    "name": "Cork",
+    "timeZone": "Europe/Dublin"
+  },
+  {
+    "code": "OSI",
+    "name": "Osijek",
+    "timeZone": "Europe/Zagreb"
+  },
+  {
+    "code": "OSL",
+    "name": "Oslo",
+    "timeZone": "Europe/Oslo"
+  },
+  {
+    "code": "OSR",
+    "name": "Ostrava",
+    "timeZone": "Europe/Prague"
+  },
+  {
+    "code": "OTP",
+    "name": "Bucharest Otopeni",
+    "timeZone": "Europe/Bucharest"
+  },
+  {
+    "code": "OUD",
+    "name": "Oujda",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "OZZ",
+    "name": "Ouarzazate",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "PAD",
+    "name": "Paderborn",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "PDV",
+    "name": "Plovdiv",
+    "timeZone": "Europe/Sofia"
+  },
+  {
+    "code": "PED",
+    "name": "Pardubice",
+    "timeZone": "Europe/Prague"
+  },
+  {
+    "code": "PEG",
+    "name": "Perugia",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "PFO",
+    "name": "Paphos",
+    "timeZone": "Asia/Nicosia"
+  },
+  {
+    "code": "PGF",
+    "name": "Perpignan",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "PIK",
+    "name": "Glasgow Prestwick",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "PIS",
+    "name": "Poitiers",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "PLQ",
+    "name": "Palanga",
+    "timeZone": "Europe/Vilnius"
+  },
+  {
+    "code": "PMF",
+    "name": "Parma",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "PMI",
+    "name": "Palma de Mallorca",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "PMO",
+    "name": "Palermo",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "POZ",
+    "name": "Poznan",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "PRG",
+    "name": "Prague",
+    "timeZone": "Europe/Prague"
+  },
+  {
+    "code": "PSA",
+    "name": "Pisa",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "PSR",
+    "name": "Pescara",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "PUY",
+    "name": "Pula",
+    "timeZone": "Europe/Zagreb"
+  },
+  {
+    "code": "PVK",
+    "name": "Preveza - Aktion",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "QSR",
+    "name": "Salerno Costa d'Amalfi",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "RAK",
+    "name": "Marrakesh",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "RBA",
+    "name": "Rabat",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "RDZ",
+    "name": "Rodez",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "REG",
+    "name": "Reggio Calabria",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "REU",
+    "name": "Barcelona Reus",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "RHO",
+    "name": "Rhodes",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "RIX",
+    "name": "Riga",
+    "timeZone": "Europe/Riga"
+  },
+  {
+    "code": "RJK",
+    "name": "Rijeka",
+    "timeZone": "Europe/Zagreb"
+  },
+  {
+    "code": "RMI",
+    "name": "Rimini",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "RMU",
+    "name": "Murcia International",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "RVN",
+    "name": "Lapland Rovaniemi",
+    "timeZone": "Europe/Helsinki"
+  },
+  {
+    "code": "RZE",
+    "name": "Rzeszow",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "SCN",
+    "name": "Saarbrücken",
+    "timeZone": "Europe/Berlin"
+  },
+  {
+    "code": "SCQ",
+    "name": "Santiago",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "SDR",
+    "name": "Santander",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "SFT",
+    "name": "Skelleftea",
+    "timeZone": "Europe/Stockholm"
+  },
+  {
+    "code": "SJJ",
+    "name": "Sarajevo",
+    "timeZone": "Europe/Sarajevo"
+  },
+  {
+    "code": "SKG",
+    "name": "Thessaloniki",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "SNN",
+    "name": "Shannon",
+    "timeZone": "Europe/Dublin"
+  },
+  {
+    "code": "SOF",
+    "name": "Sofia",
+    "timeZone": "Europe/Sofia"
+  },
+  {
+    "code": "SPU",
+    "name": "Split",
+    "timeZone": "Europe/Zagreb"
+  },
+  {
+    "code": "STN",
+    "name": "London Stansted",
+    "timeZone": "Europe/London"
+  },
+  {
+    "code": "SUF",
+    "name": "Lamezia",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "SVQ",
+    "name": "Seville",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "SZG",
+    "name": "Salzburg",
+    "timeZone": "Europe/Vienna"
+  },
+  {
+    "code": "SZY",
+    "name": "Olsztyn - Mazury",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "SZZ",
+    "name": "Szczecin",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "TFS",
+    "name": "Tenerife South",
+    "timeZone": "Atlantic/Canary"
+  },
+  {
+    "code": "TGD",
+    "name": "Podgorica",
+    "timeZone": "Europe/Podgorica"
+  },
+  {
+    "code": "TIA",
+    "name": "Tirana",
+    "timeZone": "Europe/Tirane"
+  },
+  {
+    "code": "TLL",
+    "name": "Tallinn",
+    "timeZone": "Europe/Tallinn"
+  },
+  {
+    "code": "TLS",
+    "name": "Toulouse",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "TNG",
+    "name": "Tangier",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "TPS",
+    "name": "Trapani-Marsala",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "TRF",
+    "name": "Oslo Torp",
+    "timeZone": "Europe/Oslo"
+  },
+  {
+    "code": "TRN",
+    "name": "Turin",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "TRS",
+    "name": "Trieste",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "TSF",
+    "name": "Venice Treviso",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "TTU",
+    "name": "Tétouan",
+    "timeZone": "Africa/Casablanca"
+  },
+  {
+    "code": "TUF",
+    "name": "Tours Loire Valley",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "VAR",
+    "name": "Varna",
+    "timeZone": "Europe/Sofia"
+  },
+  {
+    "code": "VCE",
+    "name": "Venice M.Polo",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "VIE",
+    "name": "Vienna",
+    "timeZone": "Europe/Vienna"
+  },
+  {
+    "code": "VIL",
+    "name": "Dakhla ",
+    "timeZone": "Africa/El_Aaiun"
+  },
+  {
+    "code": "VIT",
+    "name": "Vitoria (Basque Country)",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "VLC",
+    "name": "Valencia",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "VNO",
+    "name": "Vilnius",
+    "timeZone": "Europe/Vilnius"
+  },
+  {
+    "code": "VOL",
+    "name": "Volos",
+    "timeZone": "Europe/Athens"
+  },
+  {
+    "code": "VRN",
+    "name": "Verona",
+    "timeZone": "Europe/Rome"
+  },
+  {
+    "code": "VST",
+    "name": "Stockholm Västerås",
+    "timeZone": "Europe/Stockholm"
+  },
+  {
+    "code": "VXO",
+    "name": "Växjö Småland",
+    "timeZone": "Europe/Stockholm"
+  },
+  {
+    "code": "WAW",
+    "name": "Warsaw Chopin",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "WMI",
+    "name": "Warsaw Modlin",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "WRO",
+    "name": "Wroclaw",
+    "timeZone": "Europe/Warsaw"
+  },
+  {
+    "code": "XCR",
+    "name": "Paris Vatry",
+    "timeZone": "Europe/Paris"
+  },
+  {
+    "code": "ZAD",
+    "name": "Zadar",
+    "timeZone": "Europe/Zagreb"
+  },
+  {
+    "code": "ZAG",
+    "name": "Zagreb",
+    "timeZone": "Europe/Zagreb"
+  },
+  {
+    "code": "ZAZ",
+    "name": "Zaragoza",
+    "timeZone": "Europe/Madrid"
+  },
+  {
+    "code": "ZTH",
+    "name": "Zakynthos",
+    "timeZone": "Europe/Athens"
+  }
+]
