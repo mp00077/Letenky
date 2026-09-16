@@ -10,9 +10,10 @@ QPushButton:hover { background: #e8eee3; border-color: #7f9c8b; }
 QPushButton:disabled { color: #8a958e; background: #edf0e8; }
 QPushButton#addButton, QPushButton#searchButton { color: #f6f9ee; background: #173e3a; border-color: #173e3a; }
 QPushButton#addButton:hover, QPushButton#searchButton:hover { background: #27564c; }
-QTableView, QListWidget { background: white; alternate-background-color: #f5f8f1; border: 1px solid #d5ded2; border-radius: 6px; selection-background-color: #dcebbd; selection-color: #173e3a; }
-QTableView::item { padding: 8px; border: none; }
-QHeaderView::section { background: #eaf0e3; color: #45604f; padding: 11px 8px; border: none; border-bottom: 1px solid #d5ded2; font-weight: 600; }
+/* Keep table padding out of QCalendarWidget's internal QTableView. */
+QTableView#table, QTableView#historyTable, QListWidget { background: white; alternate-background-color: #f5f8f1; border: 1px solid #d5ded2; border-radius: 6px; selection-background-color: #dcebbd; selection-color: #173e3a; }
+QTableView#table::item, QTableView#historyTable::item { padding: 8px; border: none; }
+QTableView#table QHeaderView::section, QTableView#historyTable QHeaderView::section { background: #eaf0e3; color: #45604f; padding: 11px 8px; border: none; border-bottom: 1px solid #d5ded2; font-weight: 600; }
 QComboBox, QDateEdit { background: white; border: 1px solid #c9d4ca; border-radius: 5px; padding: 7px; min-height: 20px; }
 QComboBox QAbstractItemView { background: white; selection-background-color: #dcebbd; selection-color: #173e3a; }
 QStatusBar { background: #eaf0e3; color: #536956; }

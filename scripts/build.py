@@ -12,6 +12,17 @@ from generate_ui import ROOT, generate
 def build():
     if sys.platform not in {"win32", "darwin", "linux"}:
         raise SystemExit(f"Nepodporovaný systém: {sys.platform}")
+    if sys.platform == "win32":
+        existing_executable = ROOT / "dist/Letenky/Letenky.exe"
+        if existing_executable.exists():
+            try:
+                # A loaded Windows executable cannot be opened for writing.
+                # Check before PyInstaller starts cleaning the distribution.
+                with existing_executable.open("r+b"):
+                    pass
+            except PermissionError:
+                raise SystemExit("Před buildem ukončete Letenky i v systémové liště. "
+                                 "Výstupní aplikace je spuštěná nebo není zapisovatelná.")
     generate()
     environment = os.environ.copy()
     environment["PYTHONUTF8"] = "1"
