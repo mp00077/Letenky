@@ -4,7 +4,7 @@ import sys
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Letenky — sledování cen Ryanair")
+    parser = argparse.ArgumentParser(description="Letenky — sledování cen Ryanair a Wizz Air")
     parser.add_argument("--data-dir", help="Vlastní adresář databáze, nastavení a logů")
     parser.add_argument("--check-due", action="store_true", help="Jednorázová kontrola splatných sledování bez oken")
     parser.add_argument("--smoke-test", action="store_true", help="Offline ověření spuštění a grafu, poté ukončení")

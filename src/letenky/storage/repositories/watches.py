@@ -5,6 +5,7 @@ from uuid import uuid4
 from letenky.domain.errors import DuplicateWatch
 from letenky.domain.price import timestamp
 from letenky.domain.watch import Watch
+from letenky.domain.carrier import tracking_deadline
 
 
 class WatchRepository:
@@ -47,8 +48,9 @@ class WatchRepository:
                     DO UPDATE SET departure_local=excluded.departure_local,
                     arrival_local=excluded.arrival_local, departure_utc=excluded.departure_utc""",
                     (offer.origin, offer.destination, offer.departure.date().isoformat(),
-                     offer.flight_number, offer.departure.isoformat(), offer.arrival.isoformat(),
-                     timestamp(offer.departure)))
+                     offer.flight_number, offer.departure.isoformat(),
+                     offer.arrival.isoformat() if offer.arrival else "",
+                     timestamp(tracking_deadline(offer.departure, offer.source))))
                 flight_id = db.execute("""SELECT id FROM flights WHERE origin=? AND destination=?
                     AND departure_date=? AND flight_number=?""", (offer.origin, offer.destination,
                     offer.departure.date().isoformat(), offer.flight_number)).fetchone()[0]
@@ -77,7 +79,7 @@ class WatchRepository:
 
     def list(self):
         with self.database.connect() as db:
-            rows = db.execute("""SELECT w.id,w.instance_key,w.flight_id,f.origin,f.destination,f.departure_date,
+            rows = db.execute("""SELECT w.id,w.instance_key,w.source,w.flight_id,f.origin,f.destination,f.departure_date,
                 f.flight_number,f.departure_local,f.departure_utc,w.currency,w.state,w.next_check_at,
                 c.status last_status,c.error last_error,c.finished_at checked_at,
                 p.amount_minor latest_amount,p.observed_at latest_at,
@@ -117,8 +119,8 @@ class WatchRepository:
             if offer is not None:
                 self.insert_observation(db, watch.id, watch.flight_id, run_id, offer)
                 db.execute("UPDATE flights SET departure_local=?,arrival_local=?,departure_utc=? WHERE id=?",
-                           (offer.departure.isoformat(), offer.arrival.isoformat(),
-                            timestamp(offer.departure), watch.flight_id))
+                           (offer.departure.isoformat(), offer.arrival.isoformat() if offer.arrival else "",
+                            timestamp(tracking_deadline(offer.departure, offer.source)), watch.flight_id))
             db.execute("UPDATE watches SET next_check_at=? WHERE id=?",
                        (timestamp(finished_at + timedelta(minutes=self._interval_minutes(db))), watch.id))
             return True

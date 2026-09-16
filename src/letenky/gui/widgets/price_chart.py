@@ -3,6 +3,7 @@ from datetime import datetime
 from PySide6.QtCharts import QChart, QChartView, QDateTimeAxis, QLineSeries, QScatterSeries, QValueAxis
 from PySide6.QtCore import QDateTime, Qt
 from PySide6.QtGui import QColor, QPainter, QPen
+from letenky.domain.price import currency_factor, currency_decimals
 
 
 class PriceChart(QChartView):
@@ -22,7 +23,7 @@ class PriceChart(QChartView):
                     segment = []
                 continue
             x = datetime.fromisoformat(row["observed_at"]).timestamp() * 1000
-            point = (x, row["amount_minor"] / 100)
+            point = (x, row["amount_minor"] / currency_factor(currency))
             points.append(point)
             segment.append(point)
         if segment:
@@ -35,7 +36,7 @@ class PriceChart(QChartView):
         axis_x.setTickCount(4)
         axis_x.setTitleText("Čas zjištění · místní čas počítače")
         axis_y = QValueAxis()
-        axis_y.setLabelFormat("%.2f")
+        axis_y.setLabelFormat(f"%.{currency_decimals(currency)}f")
         axis_y.setTitleText(currency)
         min_x, max_x = min(x for x, _ in points), max(x for x, _ in points)
         if min_x == max_x:

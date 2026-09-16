@@ -1,24 +1,49 @@
 # Letenky
 
-Desktopová aplikace v Pythonu a PySide6 pro sledování cen nabídek Ryanairu.
+Desktopová aplikace v Pythonu a PySide6 pro sledování cen nabídek Ryanairu a denních minim Wizz Air.
 České rozhraní, SQLite, nastavitelný interval kontrol (výchozí 3 hodiny), historie a graf ceny.
 
 ## Co první verze umí
 
-- Výběr odletového a příletového letiště z našeptávače (224 letišť), data a měny.
+- Výběr dopravce, odletového a příletového letiště z našeptávače, data a měny (u Wizz Air automaticky).
 - Vyhledání nabídek a uložení vybraného konkrétního letu s první cenou.
-- Jednosměrné lety, 1 dospělý, základní tarif; CZK, EUR, GBP nebo PLN.
+- Jednosměrné lety, 1 dospělý, základní tarif; Ryanair CZK, EUR, GBP nebo PLN, Wizz Air měna odletového letiště.
 - Automatické a ruční kontroly, pozastavení a obnovení sledování.
 - Smazání vybraného sledování včetně historie cen po potvrzení. Probíhající kontrolu je nutné nejdříve nechat dokončit.
 - Společný interval kontrol v Nastavení: 1 až 10 080 minut (7 dnů), výchozí 180 minut.
 - Poslední zjištěná cena a historické minimum včetně data, čas poslední i další kontroly.
 - Detail s grafem a historií úspěšných i neúspěšných kontrol.
 - Běh v systémové liště, kde ji operační systém podporuje.
-- Automatické ukončení sledování po odletu, zachování historie.
+- Automatické ukončení sledování po odletu, u denního minima Wizz Air na konci zvoleného dne v místním čase odletového letiště; zachování historie.
 - Jednorázová kontrola bez oken přes `--check-due`.
 - Nativní build pro operační systém, na kterém se spustí build skript.
 
 ## Zdroj cen a jeho omezení
+
+### Wizz Air — experimentální adaptér
+
+V dialogu nového sledování vyberte Wizz Air. Adaptér používá cenový kalendář
+`/search/timetableV2` a sleduje **nejnižší cenu za trasu a den**, nikoli konkrétní
+číslo letu. Nejlevnější spoj se může mezi měřeními změnit. Čísla letů ani časy
+příletu se nedoplňují odhadem. Cena se ukládá v měně vrácené zdrojem, bez přepočtu;
+při změně měny se měření odmítne, aby se nesmíchala historie různých měn.
+Historie, minimum s datem, graf, interval kontrol, pozastavení i smazání jsou společné
+pro oba dopravce. Nabídky s alternativními letišti jsou odmítnuty jako nejednoznačné.
+
+**Živé získání cen Wizz Air zatím nebylo ověřeno.** Při ověřování 16. 9. 2026 web
+vyžadoval ověření návštěvníka (HTTP 405) a další rozhraní omezovalo automatický
+přístup (HTTP 429). V tomto prostředí tedy nelze nové sledování Wizz Air založit,
+dokud zdroj neposkytne skutečnou nabídku. Aplikace zobrazí chybu a nevytváří ceny.
+Automatické testy používají syntetické odpovědi podle dokumentovaného formátu.
+
+Aktuální verze API se zjišťuje z veřejné stránky, pak se vytvoří běžná anonymní
+relace. Ochrany webu se neobcházejí. Pro diagnostiku lze zadat známou platnou verzi
+proměnnou prostředí `WIZZAIR_API_VERSION` ve formátu `číslo.číslo.číslo`;
+tato volba nezpřístupní blokované rozhraní. Katalog letišť obsahuje geografické
+údaje, není potvrzením aktuálně provozovaných tras Wizz Air.
+Podklad formátu: [dokumentace klienta Flywizz](https://github.com/victorlane/flywizz/blob/master/docs/internal-api-spec.md).
+
+### Ryanair
 
 Adaptér používá veřejný endpoint Ryanair Fare Finder:
 `https://www.ryanair.com/api/farfnd/v4/oneWayFares`.

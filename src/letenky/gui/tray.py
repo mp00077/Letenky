@@ -5,7 +5,7 @@ def create_tray(window):
     if not QSystemTrayIcon.isSystemTrayAvailable():
         return None
     tray = QSystemTrayIcon(window.windowIcon(), window)
-    tray.setToolTip("Letenky · sledování cen Ryanair")
+    tray.setToolTip("Letenky · Ryanair a Wizz Air")
     menu = QMenu(window)
     menu.addAction("Otevřít Letenky", window.restore)
     menu.addSeparator()

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from .flight import SearchQuery
+from .carrier import CARRIERS, carrier_for_source, is_daily_minimum
 
 
 @dataclass(frozen=True)
@@ -25,8 +26,21 @@ class Watch:
     minimum_at: str | None
     checked_at: str | None
     instance_key: str
+    source: str
+
+    @property
+    def carrier(self):
+        return carrier_for_source(self.source)
+
+    @property
+    def carrier_label(self):
+        return CARRIERS[self.carrier]
+
+    @property
+    def flight_label(self):
+        return "Nejnižší cena dne" if is_daily_minimum(self.source) else self.flight_number
 
     @property
     def query(self) -> SearchQuery:
         return SearchQuery(self.origin, self.destination,
-                           date.fromisoformat(self.departure_date), self.currency)
+                           date.fromisoformat(self.departure_date), self.currency, self.carrier)

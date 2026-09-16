@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView
 
 from letenky.domain.price import local_time
+from letenky.domain.carrier import is_daily_minimum
 from letenky.gui.generated.ui_flight_detail import Ui_FlightDetailDialog
 from letenky.gui.models.history_model import HistoryModel
 from letenky.services.price_history import price_summary
@@ -28,7 +29,9 @@ class FlightDetailDialog(QDialog):
         if getattr(self, "_signature", None) == signature:
             return
         self._signature = signature
-        self.ui.heading.setText(f"{watch.origin} → {watch.destination} · {watch.flight_number}")
+        self.ui.heading.setText(f"{watch.origin} → {watch.destination} · {watch.carrier_label} · {watch.flight_label}")
+        if is_daily_minimum(watch.source):
+            self.ui.chartNote.setText("Wizz Air: historie nejnižší ceny trasy a dne bez Wizz Discount Club. Nejlevnější spoj se může měnit. Chyba kontroly přerušuje řadu.")
         self.ui.summaryLabel.setText(f"{price_summary(watch)}\nPoslední cena zjištěna: {local_time(watch.latest_at)}")
         old_model = self.ui.historyTable.model()
         self.ui.historyTable.setModel(HistoryModel(rows, self))

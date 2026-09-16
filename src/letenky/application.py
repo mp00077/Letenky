@@ -20,7 +20,7 @@ def create_window(directory, database):
     from letenky.gui.windows.main_window import MainWindow
     from letenky.gui.workers.check_worker import TaskManager
     from letenky.infrastructure.settings import Settings
-    from letenky.providers.ryanair.provider import RyanairProvider
+    from letenky.providers.registry import default_providers
     from letenky.scheduling.scheduler import Scheduler
     from letenky.services.flight_search import FlightSearch
     from letenky.services.price_checker import PriceChecker
@@ -32,7 +32,7 @@ def create_window(directory, database):
     if stylesheet.open(QIODevice.OpenModeFlag.ReadOnly):
         QApplication.instance().setStyleSheet(bytes(stylesheet.readAll()).decode("utf-8"))
     watches = WatchRepository(database)
-    provider = RyanairProvider()
+    provider = default_providers()
     tasks = TaskManager(QApplication.instance())
     scheduler = Scheduler(watches, PriceChecker(provider, watches), tasks, QApplication.instance())
     context = ApplicationContext(directory, Settings.load(directory), watches,

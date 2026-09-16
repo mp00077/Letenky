@@ -16,6 +16,8 @@ class RyanairProvider:
         return sorted(self._airports.values(), key=lambda airport: airport.name.casefold())
 
     def search(self, query: SearchQuery):
+        if query.carrier != "ryanair" or query.currency not in {"CZK", "EUR", "GBP", "PLN"}:
+            raise ProviderError("Pro Ryanair vyberte měnu CZK, EUR, GBP nebo PLN.")
         if query.origin not in self._airports or query.destination not in self._airports:
             raise ProviderError("Vyberte letiště ze seznamu.")
         payload = self.client.get("/api/farfnd/v4/oneWayFares", {

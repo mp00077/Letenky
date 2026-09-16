@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from letenky.domain.price import utc_now
+from letenky.domain.carrier import tracking_deadline
 
 
 class WatchService:
@@ -9,7 +10,7 @@ class WatchService:
 
     def add(self, offer):
         now = utc_now()
-        if offer.departure <= now:
+        if tracking_deadline(offer.departure, offer.source) <= now:
             raise ValueError("Tento let již odletěl.")
         if now - offer.observed_at > timedelta(minutes=15):
             raise ValueError("Výsledek hledání je starší než 15 minut. Vyhledejte let znovu.")

@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         message.setIcon(QMessageBox.Icon.Warning)
         message.setTextFormat(Qt.TextFormat.PlainText)
         message.setText(f"Smazat sledování {watch.origin} → {watch.destination}, "
-                        f"{watch.flight_number}, odlet {watch.departure_date}?")
+                        f"{watch.carrier_label} · {watch.flight_label}, odlet {watch.departure_date}?")
         message.setInformativeText("Smaže se i celá historie cen tohoto sledování. Tuto akci nelze vrátit.")
         delete_button = message.addButton("Smazat", QMessageBox.ButtonRole.DestructiveRole)
         cancel_button = message.addButton("Zrušit", QMessageBox.ButtonRole.RejectRole)

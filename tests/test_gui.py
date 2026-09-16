@@ -69,6 +69,24 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(results, [(42, self.app.thread())])
         self.assertFalse(self.window.context.tasks.busy)
 
+    def test_wizzair_selection_and_daily_minimum_display(self):
+        from letenky.gui.dialogs.add_watch import AddWatchDialog
+        from tests.test_wizzair import offer
+        context = self.window.context
+        dialog = AddWatchDialog(context.search, context.watch_service, context.tasks, "CZK", self.window)
+        dialog.ui.carrierCombo.setCurrentIndex(dialog.ui.carrierCombo.findData("wizzair"))
+        self.assertFalse(dialog.ui.currencyCombo.isEnabled())
+        self.assertIsNone(dialog.ui.currencyCombo.currentData())
+        context.watches.add(offer())
+        self.window.refresh()
+        model = self.window.ui.table.model()
+        self.assertIn("Wizz Air", model.data(model.index(0, 0)))
+        self.assertIn("denní minimum", model.data(model.index(0, 1)))
+        dialog.ui.carrierCombo.setCurrentIndex(dialog.ui.carrierCombo.findData("ryanair"))
+        self.assertTrue(dialog.ui.currencyCombo.isEnabled())
+        self.assertEqual(dialog.ui.currencyCombo.currentData(), "CZK")
+        dialog.close()
+
     def test_search_dialog_rejects_unknown_airport(self):
         from letenky.gui.dialogs.add_watch import AddWatchDialog
         context = self.window.context

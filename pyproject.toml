@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "letenky"
 version = "0.1.0"
-description = "Desktopové sledování cen letenek Ryanair"
+description = "Desktopové sledování cen letenek Ryanair a Wizz Air"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["PySide6>=6.8,<7", "tzdata>=2025.2", "certifi>=2026.2.25"]
@@ -20,4 +20,4 @@ letenky = "letenky.bootstrap:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-letenky = ["storage/migrations/*.sql", "providers/ryanair/airports.json"]
+letenky = ["storage/migrations/*.sql", "providers/ryanair/airports.json", "providers/wizzair/airports.json"]
