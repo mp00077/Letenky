@@ -24,6 +24,7 @@ class Watch:
     minimum_amount: int | None
     minimum_at: str | None
     checked_at: str | None
+    instance_key: str
 
     @property
     def query(self) -> SearchQuery:

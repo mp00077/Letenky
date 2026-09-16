@@ -7,8 +7,10 @@
   <layout class="QVBoxLayout" name="layout">
    <item><widget class="QLabel" name="currencyLabel"><property name="text"><string>Výchozí měna pro nová sledování</string></property></widget></item>
    <item><widget class="QComboBox" name="currencyCombo"/></item>
+   <item><widget class="QLabel" name="intervalLabel"><property name="text"><string>Interval kontroly cen (pro všechna sledování)</string></property><property name="buddy"><cstring>intervalSpin</cstring></property></widget></item>
+   <item><widget class="QSpinBox" name="intervalSpin"><property name="suffix"><string> min</string></property><property name="minimum"><number>1</number></property><property name="maximum"><number>10080</number></property><property name="value"><number>180</number></property></widget></item>
    <item><widget class="QCheckBox" name="trayCheck"><property name="text"><string>Při zavření okna pokračovat v systémové liště</string></property></widget></item>
-   <item><widget class="QLabel" name="infoLabel"><property name="text"><string>Kontroly probíhají každé 3 hodiny při spuštěné aplikaci. Po probuzení počítače se provede zmeškaná kontrola jednou.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+   <item><widget class="QLabel" name="infoLabel"><property name="text"><string>Interval: 1 až 10 080 minut (7 dnů), výchozí 180 minut. Změna přepočítá další kontroly od posledního měření. Pozastavená sledování zůstanou pozastavená. Kontroly probíhají při spuštěné aplikaci; po probuzení se zmeškaná kontrola provede jednou.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
    <item><widget class="QLabel" name="pathLabel"><property name="wordWrap"><bool>true</bool></property><property name="textInteractionFlags"><set>Qt::TextSelectableByMouse</set></property></widget></item>
    <item><widget class="QDialogButtonBox" name="buttonBox"><property name="standardButtons"><set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set></property></widget></item>
   </layout>

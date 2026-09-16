@@ -1,7 +1,7 @@
 # Letenky
 
 Desktopová aplikace v Pythonu a PySide6 pro sledování cen nabídek Ryanairu.
-České rozhraní, SQLite, kontroly každé 3 hodiny, historie a graf ceny.
+České rozhraní, SQLite, nastavitelný interval kontrol (výchozí 3 hodiny), historie a graf ceny.
 
 ## Co první verze umí
 
@@ -9,6 +9,8 @@ Desktopová aplikace v Pythonu a PySide6 pro sledování cen nabídek Ryanairu.
 - Vyhledání nabídek a uložení vybraného konkrétního letu s první cenou.
 - Jednosměrné lety, 1 dospělý, základní tarif; CZK, EUR, GBP nebo PLN.
 - Automatické a ruční kontroly, pozastavení a obnovení sledování.
+- Smazání vybraného sledování včetně historie cen po potvrzení. Probíhající kontrolu je nutné nejdříve nechat dokončit.
+- Společný interval kontrol v Nastavení: 1 až 10 080 minut (7 dnů), výchozí 180 minut.
 - Poslední zjištěná cena a historické minimum včetně data, čas poslední i další kontroly.
 - Detail s grafem a historií úspěšných i neúspěšných kontrol.
 - Běh v systémové liště, kde ji operační systém podporuje.
@@ -114,8 +116,15 @@ platformy je nutné ověřit na příslušných systémech.
   přeruší spojnici; nezobrazuje odhad nulové ceny.
 - Další kontrola je uložená v databázi. Po restartu nebo probuzení se zmeškaná
   kontrola provede jednou; minulá měření se nevymýšlejí.
+- Vlastní interval se ukládá do stejné databáze, takže jej používá GUI i `--check-due`.
+  Změna intervalu přepočítá aktivní sledování od poslední dokončené kontroly;
+  pokud nový termín již uplynul, kontrola se provede při nejbližším průchodu plánovače.
+  Pozastavená a ukončená sledování se neobnovují. Běžící kontrola použije při dokončení
+  nový interval. Plánovač kontroluje splatné dotazy každých 30 sekund.
+- Smazání odstraní sledování, jeho měření a záznamy kontrol v jediné transakci.
+  Ostatní sledování stejného letu (například v jiné měně) zůstanou zachována.
 - Po dočasné síťové chybě proběhne nejvýše jeden opakovaný HTTP pokus. HTTP 403,
-  409 a 429 se okamžitě hlásí jako omezení přístupu, další kontrola je za 3 hodiny.
+  409 a 429 se okamžitě hlásí jako omezení přístupu, další kontrola je podle nastaveného intervalu.
 - Síťová komunikace používá dva workery. Callbacky mění GUI pouze v hlavním vlákně.
 - `QLockFile` brání dvěma instancím nad stejným datovým adresářem; v procesu se
   stejné sledování nemůže kontrolovat souběžně. Každá DB operace má vlastní spojení.
@@ -134,6 +143,10 @@ nenulový návratový kód signalizuje chybu. Pro použití CLI na Windows prefe
 Python spuštění; distribuované `.exe` je aplikace bez konzole.
 
 ## Vývoj a testy
+
+Přehled datovaných změn je v [changelog.md](changelog.md). Po každé úpravě projektu
+se doplňuje stručný záznam pod aktuální datum. Distribuční build se spouští pouze
+na výslovný pokyn uživatele.
 
 ### Chyba připojení na macOS
 

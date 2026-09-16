@@ -15,7 +15,7 @@
      <item><spacer name="headingSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
      <item><widget class="QPushButton" name="addButton"><property name="text"><string>+ Přidat sledování</string></property></widget></item>
     </layout></item>
-    <item><widget class="QLabel" name="subtitle"><property name="text"><string>Cena pod dohledem. Automatická kontrola každé 3 hodiny při spuštěné aplikaci.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+    <item><widget class="QLabel" name="subtitle"><property name="text"><string>Cena pod dohledem. Automatické kontroly při spuštěné aplikaci.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
     <item><widget class="QLabel" name="summaryLabel"><property name="text"><string>Žádná sledování</string></property></widget></item>
     <item><widget class="QLabel" name="emptyLabel"><property name="text"><string>Přidejte první let a začněte sledovat jeho cenu.</string></property><property name="alignment"><set>Qt::AlignCenter</set></property><property name="minimumSize"><size><width>0</width><height>90</height></size></property></widget></item>
     <item><widget class="QTableView" name="table"><property name="alternatingRowColors"><bool>true</bool></property><property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property><property name="selectionMode"><enum>QAbstractItemView::SingleSelection</enum></property><property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property><property name="showGrid"><bool>false</bool></property></widget></item>
@@ -23,6 +23,7 @@
      <item><widget class="QPushButton" name="checkButton"><property name="text"><string>Zkontrolovat nyní</string></property></widget></item>
      <item><widget class="QPushButton" name="detailButton"><property name="text"><string>Graf a historie</string></property></widget></item>
      <item><widget class="QPushButton" name="pauseButton"><property name="text"><string>Pozastavit</string></property></widget></item>
+     <item><widget class="QPushButton" name="deleteButton"><property name="text"><string>Smazat sledování</string></property></widget></item>
      <item><spacer name="actionSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
      <item><widget class="QPushButton" name="settingsButton"><property name="text"><string>Nastavení</string></property></widget></item>
      <item><widget class="QPushButton" name="quitButton"><property name="text"><string>Ukončit</string></property></widget></item>

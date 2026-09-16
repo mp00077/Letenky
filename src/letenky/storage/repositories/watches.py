@@ -1,5 +1,6 @@
 import sqlite3
-from datetime import timedelta
+from datetime import datetime, timedelta
+from uuid import uuid4
 
 from letenky.domain.errors import DuplicateWatch
 from letenky.domain.price import timestamp
@@ -9,6 +10,32 @@ from letenky.domain.watch import Watch
 class WatchRepository:
     def __init__(self, database):
         self.database = database
+
+    @staticmethod
+    def _interval_minutes(db):
+        return db.execute("SELECT check_interval_minutes FROM monitor_settings WHERE id=1").fetchone()[0]
+
+    @property
+    def check_interval_minutes(self):
+        with self.database.connect() as db:
+            return self._interval_minutes(db)
+
+    def set_check_interval(self, minutes, now):
+        if type(minutes) is not int or not 1 <= minutes <= 10080:
+            raise ValueError("Interval musí být celé číslo od 1 do 10 080 minut.")
+        with self.database.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if self._interval_minutes(db) == minutes:
+                return
+            db.execute("UPDATE monitor_settings SET check_interval_minutes=? WHERE id=1", (minutes,))
+            rows = db.execute("""SELECT w.id, COALESCE(
+                (SELECT finished_at FROM check_runs WHERE watch_id=w.id ORDER BY id DESC LIMIT 1),
+                w.created_at) last_check FROM watches w JOIN flights f ON f.id=w.flight_id
+                WHERE w.state='active' AND f.departure_utc>?""", (timestamp(now),)).fetchall()
+            for row in rows:
+                due = datetime.fromisoformat(row["last_check"]) + timedelta(minutes=minutes)
+                db.execute("UPDATE watches SET next_check_at=? WHERE id=?",
+                           (timestamp(max(now, due)), row["id"]))
 
     def add(self, offer):
         now = timestamp(offer.observed_at)
@@ -26,9 +53,10 @@ class WatchRepository:
                     AND departure_date=? AND flight_number=?""", (offer.origin, offer.destination,
                     offer.departure.date().isoformat(), offer.flight_number)).fetchone()[0]
                 watch_id = db.execute("""INSERT INTO watches
-                    (flight_id,currency,source,created_at,next_check_at) VALUES (?,?,?,?,?)""",
+                    (flight_id,currency,source,created_at,next_check_at,instance_key) VALUES (?,?,?,?,?,?)""",
                     (flight_id, offer.currency, offer.source, now,
-                     timestamp(offer.observed_at + timedelta(hours=3)))).lastrowid
+                     timestamp(offer.observed_at + timedelta(minutes=self._interval_minutes(db))),
+                     uuid4().hex)).lastrowid
                 run_id = db.execute("""INSERT INTO check_runs
                     (watch_id,started_at,finished_at,status) VALUES (?,?,?,'ok')""",
                     (watch_id, now, now)).lastrowid
@@ -49,7 +77,7 @@ class WatchRepository:
 
     def list(self):
         with self.database.connect() as db:
-            rows = db.execute("""SELECT w.id,w.flight_id,f.origin,f.destination,f.departure_date,
+            rows = db.execute("""SELECT w.id,w.instance_key,w.flight_id,f.origin,f.destination,f.departure_date,
                 f.flight_number,f.departure_local,f.departure_utc,w.currency,w.state,w.next_check_at,
                 c.status last_status,c.error last_error,c.finished_at checked_at,
                 p.amount_minor latest_amount,p.observed_at latest_at,
@@ -79,6 +107,10 @@ class WatchRepository:
 
     def record_check(self, watch, started_at, finished_at, status, error=None, offer=None):
         with self.database.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if db.execute("SELECT id FROM watches WHERE id=? AND instance_key=?",
+                          (watch.id, watch.instance_key)).fetchone() is None:
+                return False
             run_id = db.execute("""INSERT INTO check_runs
                 (watch_id,started_at,finished_at,status,error) VALUES (?,?,?,?,?)""",
                 (watch.id, timestamp(started_at), timestamp(finished_at), status, error)).lastrowid
@@ -88,4 +120,18 @@ class WatchRepository:
                            (offer.departure.isoformat(), offer.arrival.isoformat(),
                             timestamp(offer.departure), watch.flight_id))
             db.execute("UPDATE watches SET next_check_at=? WHERE id=?",
-                       (timestamp(finished_at + timedelta(hours=3)), watch.id))
+                       (timestamp(finished_at + timedelta(minutes=self._interval_minutes(db))), watch.id))
+            return True
+
+    def delete(self, watch_id):
+        with self.database.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            watch = db.execute("SELECT flight_id FROM watches WHERE id=?", (watch_id,)).fetchone()
+            if watch is None:
+                return False
+            db.execute("DELETE FROM price_observations WHERE watch_id=?", (watch_id,))
+            db.execute("DELETE FROM check_runs WHERE watch_id=?", (watch_id,))
+            db.execute("DELETE FROM watches WHERE id=?", (watch_id,))
+            db.execute("DELETE FROM flights WHERE id=? AND NOT EXISTS (SELECT 1 FROM watches WHERE flight_id=?)",
+                       (watch["flight_id"], watch["flight_id"]))
+            return True

@@ -165,6 +165,122 @@ class StorageTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.db.initialize()
 
+    def test_delete_removes_history_and_orphan_flight(self):
+        self.checker().check(self.watch_id)
+        self.assertTrue(self.repo.delete(self.watch_id))
+        self.assertIsNone(self.repo.get(self.watch_id))
+        self.assertEqual(self.history.history(self.watch_id), [])
+        with self.db.connect() as db:
+            for table in ("flights", "watches", "check_runs", "price_observations"):
+                self.assertEqual(db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0], 0)
+            self.assertEqual(db.execute("PRAGMA foreign_key_check").fetchall(), [])
+        self.assertFalse(self.repo.delete(self.watch_id))
+
+    def test_delete_keeps_other_currency_watch_and_shared_flight(self):
+        other_id = self.repo.add(replace(self.offer, currency="EUR", amount_minor=2500))
+        self.repo.delete(self.watch_id)
+        self.assertEqual(self.repo.get(other_id).latest_amount, 2500)
+        self.assertEqual(len(self.history.history(other_id)), 1)
+        with self.db.connect() as db:
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM flights").fetchone()[0], 1)
+            self.assertEqual(db.execute("PRAGMA foreign_key_check").fetchall(), [])
+
+    def test_delete_failure_rolls_back_history(self):
+        import sqlite3
+        with self.db.connect() as db:
+            db.execute("""CREATE TRIGGER prevent_delete BEFORE DELETE ON watches
+                          BEGIN SELECT RAISE(ABORT, 'test failure'); END""")
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.repo.delete(self.watch_id)
+        self.assertIsNotNone(self.repo.get(self.watch_id))
+        self.assertEqual(len(self.history.history(self.watch_id)), 1)
+
+    def test_late_result_cannot_recreate_deleted_or_reused_watch(self):
+        old_watch = self.repo.get(self.watch_id)
+        self.repo.delete(self.watch_id)
+        self.assertFalse(self.repo.record_check(old_watch, NOW, NOW, "ok", offer=self.offer))
+        new_id = self.repo.add(self.offer)
+        self.assertEqual(new_id, old_watch.id)  # SQLite may reuse INTEGER PRIMARY KEYs.
+        self.assertNotEqual(self.repo.get(new_id).instance_key, old_watch.instance_key)
+        self.assertFalse(self.repo.record_check(old_watch, NOW, NOW, "ok", offer=self.offer))
+        self.assertEqual(len(self.history.history(new_id)), 1)
+
+    def test_custom_interval_applies_to_new_watches_and_failed_checks(self):
+        self.repo.set_check_interval(45, NOW)
+        new_id = self.repo.add(replace(self.offer, flight_number="FR2000"))
+        self.assertEqual(self.repo.get(new_id).next_check_at, timestamp(NOW + timedelta(minutes=45)))
+        with self.assertLogs("letenky.services.price_checker", level="ERROR"):
+            self.checker(error=ProviderError("offline"), now=NOW).check(self.watch_id)
+        self.assertEqual(self.repo.get(self.watch_id).next_check_at, timestamp(NOW + timedelta(minutes=45)))
+        reopened = Database(self.db.path)
+        reopened.initialize()
+        self.assertEqual(WatchRepository(reopened).check_interval_minutes, 45)
+
+    def test_interval_change_reschedules_from_last_check_and_clamps_overdue(self):
+        self.checker(now=NOW + timedelta(hours=1)).check(self.watch_id)
+        self.repo.set_check_interval(60, NOW + timedelta(hours=1, minutes=10))
+        self.assertEqual(self.repo.get(self.watch_id).next_check_at, timestamp(NOW + timedelta(hours=2)))
+        self.repo.set_check_interval(5, NOW + timedelta(hours=1, minutes=10))
+        self.assertEqual(self.repo.get(self.watch_id).next_check_at, timestamp(NOW + timedelta(hours=1, minutes=10)))
+
+    def test_interval_does_not_resume_paused_or_completed_watches(self):
+        self.repo.set_paused(self.watch_id, True, NOW)
+        before = self.repo.get(self.watch_id)
+        self.repo.set_check_interval(1, NOW)
+        self.assertEqual(self.repo.get(self.watch_id), before)
+        self.repo.expire(self.offer.departure)
+        before = self.repo.get(self.watch_id)
+        self.repo.set_check_interval(10080, NOW)
+        self.assertEqual(self.repo.get(self.watch_id), before)
+
+    def test_invalid_interval_is_rejected_without_changing_schedule(self):
+        before = self.repo.get(self.watch_id)
+        for value in (0, -1, 10081, 2.5, "60", True, None):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.repo.set_check_interval(value, NOW)
+        self.assertEqual(self.repo.check_interval_minutes, 180)
+        self.assertEqual(self.repo.get(self.watch_id), before)
+
+    def test_running_check_uses_new_interval_when_finished(self):
+        entered, release = Event(), Event()
+        class SlowProvider:
+            def search(_self, query):
+                entered.set()
+                release.wait(5)
+                return [self.offer]
+        finish = NOW + timedelta(hours=3)
+        checker = PriceChecker(SlowProvider(), self.repo, lambda: finish)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            result = pool.submit(checker.check, self.watch_id)
+            try:
+                self.assertTrue(entered.wait(3))
+                self.repo.set_check_interval(30, finish)
+            finally:
+                release.set()
+            self.assertTrue(result.result(5))
+        self.assertEqual(self.repo.get(self.watch_id).next_check_at, timestamp(finish + timedelta(minutes=30)))
+
+    def test_migration_preserves_existing_v1_watch_and_price(self):
+        from tests.support import ROOT
+        legacy = Database(Path(self.directory.name) / "legacy.sqlite3")
+        with legacy.connect() as db:
+            db.executescript((ROOT / "src/letenky/storage/migrations/001_initial.sql").read_text(encoding="utf-8"))
+            db.execute("PRAGMA user_version=1")
+            db.execute("""INSERT INTO flights VALUES (1,'PRG','STN','2026-11-20','FR1014',?,?,?)""",
+                       (self.offer.departure.isoformat(), self.offer.arrival.isoformat(), timestamp(self.offer.departure)))
+            db.execute("""INSERT INTO watches
+                (id,flight_id,currency,source,created_at,next_check_at) VALUES (1,1,'CZK','ryanair_farefinder',?,?)""",
+                       (timestamp(NOW), timestamp(NOW + timedelta(hours=3))))
+            db.execute("INSERT INTO check_runs VALUES (1,1,?,?,'ok',NULL)", (timestamp(NOW), timestamp(NOW)))
+            db.execute("INSERT INTO price_observations VALUES (1,1,1,1,?,56763,'CZK',NULL)", (timestamp(NOW),))
+        legacy.initialize()
+        repository = WatchRepository(legacy)
+        self.assertEqual(repository.check_interval_minutes, 180)
+        self.assertEqual(repository.get(1).latest_amount, 56763)
+        self.assertEqual(len(repository.get(1).instance_key), 32)
+        repository.set_check_interval(60, NOW)
+        self.assertEqual(repository.get(1).next_check_at, timestamp(NOW + timedelta(hours=1)))
+
 
 if __name__ == "__main__":
     unittest.main()

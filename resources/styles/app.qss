@@ -14,7 +14,7 @@ QPushButton#addButton:hover, QPushButton#searchButton:hover { background: #27564
 QTableView#table, QTableView#historyTable, QListWidget { background: white; alternate-background-color: #f5f8f1; border: 1px solid #d5ded2; border-radius: 6px; selection-background-color: #dcebbd; selection-color: #173e3a; }
 QTableView#table::item, QTableView#historyTable::item { padding: 8px; border: none; }
 QTableView#table QHeaderView::section, QTableView#historyTable QHeaderView::section { background: #eaf0e3; color: #45604f; padding: 11px 8px; border: none; border-bottom: 1px solid #d5ded2; font-weight: 600; }
-QComboBox, QDateEdit { background: white; border: 1px solid #c9d4ca; border-radius: 5px; padding: 7px; min-height: 20px; }
+QComboBox, QDateEdit, QSpinBox { background: white; border: 1px solid #c9d4ca; border-radius: 5px; padding: 7px; min-height: 20px; }
 QComboBox QAbstractItemView { background: white; selection-background-color: #dcebbd; selection-color: #173e3a; }
 QStatusBar { background: #eaf0e3; color: #536956; }
 QToolTip { background: #173e3a; color: white; border: none; padding: 8px; }

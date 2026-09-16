@@ -36,8 +36,7 @@ class PriceChecker:
             except Exception as exc:
                 log.exception("Kontrola sledování %s selhala", watch_id)
                 offer, status, error = None, "error", str(exc)
-            self.repository.record_check(watch, started, self.clock(), status, error, offer)
-            return True
+            return self.repository.record_check(watch, started, self.clock(), status, error, offer)
         finally:
             with self._lock:
                 self._running.discard(watch_id)

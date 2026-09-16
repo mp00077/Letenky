@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 import unittest
 from dataclasses import replace
 from datetime import timedelta
+from unittest.mock import patch
 
 from tests.support import ROOT
 
@@ -116,6 +117,68 @@ class GuiTests(unittest.TestCase):
         ]
         chart = PriceChart(rows, "CZK", self.window)
         self.assertEqual([series.count() for series in chart.chart().series()], [2, 3])
+
+    def test_delete_selected_requires_confirmation_and_clears_list(self):
+        context = self.window.context
+        watch_id = context.watches.add(sample_offer())
+        self.window.refresh()
+        self.window.ui.table.selectRow(0)
+        self.assertTrue(self.window.ui.deleteButton.isEnabled())
+        with patch.object(self.window, "confirm_delete", return_value=False):
+            self.window.delete_selected()
+        self.assertIsNotNone(context.watches.get(watch_id))
+        with patch.object(self.window, "confirm_delete", return_value=True):
+            self.window.delete_selected()
+        self.assertIsNone(context.watches.get(watch_id))
+        self.assertTrue(self.window.ui.emptyLabel.isVisible())
+        self.assertFalse(self.window.ui.deleteButton.isEnabled())
+
+    def test_delete_is_disabled_during_check_including_confirmation_race(self):
+        context = self.window.context
+        watch_id = context.watches.add(sample_offer())
+        self.window.refresh()
+        self.window.ui.table.selectRow(0)
+        context.scheduler.in_flight.add(watch_id)
+        self.window.update_actions()
+        self.assertFalse(self.window.ui.deleteButton.isEnabled())
+        with patch.object(self.window, "confirm_delete") as confirm:
+            self.window.delete_selected()
+            confirm.assert_not_called()
+        context.scheduler.in_flight.clear()
+        def start_check(_watch):
+            context.scheduler.in_flight.add(watch_id)
+            return True
+        with patch.object(self.window, "confirm_delete", side_effect=start_check):
+            self.window.delete_selected()
+        self.assertIsNotNone(context.watches.get(watch_id))
+
+    def test_settings_save_and_cancel_custom_interval(self):
+        from letenky.gui.dialogs.settings import SettingsDialog
+        context = self.window.context
+        dialog = SettingsDialog(context.settings, context.directory, context.watches, self.window)
+        self.assertEqual(dialog.ui.intervalSpin.value(), 180)
+        dialog.ui.intervalSpin.setValue(45)
+        dialog.reject()
+        self.assertEqual(context.watches.check_interval_minutes, 180)
+        dialog = SettingsDialog(context.settings, context.directory, context.watches, self.window)
+        dialog.ui.intervalSpin.setValue(45)
+        dialog.save()
+        self.assertEqual(context.watches.check_interval_minutes, 45)
+        self.window.refresh()
+        self.assertIn("45 min", self.window.ui.subtitle.text())
+        reopened = SettingsDialog(context.settings, context.directory, context.watches, self.window)
+        self.assertEqual(reopened.ui.intervalSpin.value(), 45)
+
+    def test_settings_do_not_change_interval_if_file_save_fails(self):
+        from letenky.gui.dialogs.settings import SettingsDialog
+        context = self.window.context
+        dialog = SettingsDialog(context.settings, context.directory, context.watches, self.window)
+        dialog.ui.intervalSpin.setValue(30)
+        with patch("letenky.gui.dialogs.settings.Settings.save", side_effect=OSError("disk full")):
+            with patch("letenky.gui.dialogs.settings.QMessageBox.warning") as warning:
+                dialog.save()
+                warning.assert_called_once()
+        self.assertEqual(context.watches.check_interval_minutes, 180)
 
 
 if __name__ == "__main__":

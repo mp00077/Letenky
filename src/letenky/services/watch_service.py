@@ -14,3 +14,6 @@ class WatchService:
         if now - offer.observed_at > timedelta(minutes=15):
             raise ValueError("Výsledek hledání je starší než 15 minut. Vyhledejte let znovu.")
         return self.repository.add(offer)
+
+    def delete(self, watch_id):
+        return self.repository.delete(watch_id)
