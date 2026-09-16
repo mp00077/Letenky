@@ -8,7 +8,7 @@ root = Path(SPECPATH).parent
 datas = [
     (str(root / 'src/letenky/storage/migrations'), 'letenky/storage/migrations'),
     (str(root / 'src/letenky/providers/ryanair/airports.json'), 'letenky/providers/ryanair'),
-] + collect_data_files('tzdata')
+] + collect_data_files('tzdata') + collect_data_files('certifi')
 hiddenimports = [
     'letenky.gui.dialogs.add_watch', 'letenky.gui.dialogs.settings',
     'letenky.gui.windows.flight_detail', 'letenky.gui.widgets.price_chart',

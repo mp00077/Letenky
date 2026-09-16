@@ -83,7 +83,7 @@ Skript zavolá `pyside6-uic` a `pyside6-rcc` ze stejného prostředí jako aplik
 spustí testy, provede build přes PyInstaller a offline ověří výsledný program
 včetně načtení grafů. Generované soubory v `gui/generated` se ručně neupravují.
 `packaging/letenky.spec` explicitně zahrnuje lazy moduly, Qt Charts, SVG, migrace,
-letiště a časová pásma. Výstup je typu one-folder; distribuujte celou složku.
+letiště, časová pásma a certifikáty `certifi`. Výstup je typu one-folder; distribuujte celou složku.
 Na Windows build používá omezený `PATH`, aby nepřibalil nekompatibilní ICU/SSL DLL
 z jiných nástrojů (například Poppleru nebo Condy). Spouštějte jej přes `scripts/build.py`.
 
@@ -134,6 +134,33 @@ nenulový návratový kód signalizuje chybu. Pro použití CLI na Windows prefe
 Python spuštění; distribuované `.exe` je aplikace bez konzole.
 
 ## Vývoj a testy
+
+### Chyba připojení na macOS
+
+Původní verze zobrazovala stejnou zprávu pro chybu certifikátu, DNS i timeout.
+Samotná zpráva o připojení proto neznamená, že počítač nemá internet.
+Aktuální zdroje tyto chyby rozlišují a pro HTTPS načítají také přenosnou sadu
+důvěryhodných certifikátů z `certifi`. Ověřování certifikátu i názvu serveru zůstává zapnuté.
+Konfigurace balení zahrnuje `certifi/cacert.pem`, aby příští balíček nezávisel
+na umístění certifikátů na počítači, kde se sestavoval.
+
+Při spuštění ze zdrojů aktualizujte závislosti ve stejném virtuálním prostředí:
+
+```bash
+.venv/bin/python -m pip install -r requirements-build.txt
+.venv/bin/python scripts/run_dev.py
+```
+
+Instalace závislostí ani `run_dev.py` nevytváří distribuční build.
+Již existující `.app` tyto změny automaticky nepřevezme.
+Pro určení skutečné příčiny otevřete `letenky.log` v adresáři uvedeném v Nastavení
+a vyhledejte chybu ze stejného času. Například `CERTIFICATE_VERIFY_FAILED`
+znamená selhání ověření certifikátu, `gaierror` problém DNS a `timed out` timeout.
+U Pythonu instalovaného z python.org může pomoci spuštění `Install Certificates.command`
+v `/Applications/Python 3.x/` pro používanou verzi Pythonu; to se netýká automaticky
+samostatně zabalené aplikace. Viz [dokumentace Pythonu pro macOS](https://docs.python.org/3/using/mac.html).
+
+### Spuštění testů
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\generate_ui.py
