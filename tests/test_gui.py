@@ -10,7 +10,7 @@ from tests.support import ROOT
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PySide6.QtCore import QCoreApplication, QDate, QEvent, QThread
+from PySide6.QtCore import QCoreApplication, QDate, QEvent, QThread, Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtTest import QTest
 
@@ -68,6 +68,27 @@ class GuiTests(unittest.TestCase):
                 break
         self.assertEqual(results, [(42, self.app.thread())])
         self.assertFalse(self.window.context.tasks.busy)
+
+    def test_price_trend_uses_last_two_prices_and_survives_failed_check(self):
+        repo = self.window.context.watches
+        offer = sample_offer()
+        watch_id = repo.add(offer)
+        self.assertIsNone(repo.get(watch_id).price_change)
+        # Equal timestamps still have a deterministic order by observation ID.
+        for amount, marker, color in ((offer.amount_minor - 100, "↓", "#187044"),
+                                      (offer.amount_minor + 100, "↑", "#a13b2c"),
+                                      (offer.amount_minor + 100, "↔", None)):
+            repo.record_check(repo.get(watch_id), offer.observed_at, offer.observed_at,
+                              "ok", offer=replace(offer, amount_minor=amount))
+            self.window.refresh()
+            model = self.window.ui.table.model()
+            index = model.index(0, 2)
+            self.assertTrue(model.data(index).startswith(marker))
+            foreground = model.data(index, Qt.ItemDataRole.ForegroundRole)
+            self.assertEqual(foreground.name() if foreground else None, color)
+        repo.record_check(repo.get(watch_id), offer.observed_at, offer.observed_at,
+                          "error", error="Spojení selhalo")
+        self.assertEqual(repo.get(watch_id).price_change, 0)
 
     def test_search_dialog_rejects_unknown_airport(self):
         from letenky.gui.dialogs.add_watch import AddWatchDialog

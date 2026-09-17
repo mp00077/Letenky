@@ -25,6 +25,13 @@ class Watch:
     minimum_at: str | None
     checked_at: str | None
     instance_key: str
+    previous_amount: int | None = None
+
+    @property
+    def price_change(self) -> int | None:
+        if self.latest_amount is None or self.previous_amount is None:
+            return None
+        return self.latest_amount - self.previous_amount
 
     @property
     def query(self) -> SearchQuery:

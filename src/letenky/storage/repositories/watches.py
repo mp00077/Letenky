@@ -81,6 +81,8 @@ class WatchRepository:
                 f.flight_number,f.departure_local,f.departure_utc,w.currency,w.state,w.next_check_at,
                 c.status last_status,c.error last_error,c.finished_at checked_at,
                 p.amount_minor latest_amount,p.observed_at latest_at,
+                (SELECT amount_minor FROM price_observations WHERE watch_id=w.id
+                 ORDER BY observed_at DESC,id DESC LIMIT 1 OFFSET 1) previous_amount,
                 m.amount_minor minimum_amount,m.observed_at minimum_at
                 FROM watches w JOIN flights f ON f.id=w.flight_id
                 LEFT JOIN check_runs c ON c.id=(SELECT id FROM check_runs WHERE watch_id=w.id ORDER BY id DESC LIMIT 1)

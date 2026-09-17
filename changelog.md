@@ -2,6 +2,10 @@
 
 Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoře.
 
+## 2026-09-17
+
+- V hlavním seznamu sledovaných letů přidáno zelené označení a šipka dolů při poklesu ceny, červené označení a šipka nahoru při růstu. Porovnávají se poslední dvě získané ceny; nezměněná cena je neutrální a tooltip uvádí rozdíl.
+
 ## 2026-09-16
 
 - Přidáno smazání vybraného sledování včetně historie cen s potvrzením v aplikaci.

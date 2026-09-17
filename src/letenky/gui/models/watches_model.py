@@ -3,7 +3,7 @@ from datetime import datetime
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PySide6.QtGui import QColor
 
-from letenky.domain.price import local_time
+from letenky.domain.price import local_time, money
 from letenky.services.price_history import STATUS_LABELS, price_summary
 
 
@@ -34,10 +34,18 @@ class WatchesModel(QAbstractTableModel):
         if not index.isValid():
             return None
         watch = self.watches[index.row()]
+        change = watch.price_change
+        marker = "" if change is None else "↓ " if change < 0 else "↑ " if change > 0 else "↔ "
+        trend = ("První měření · zatím bez srovnání" if change is None else
+                 "Cena beze změny" if change == 0 else
+                 f"Cena {'klesla' if change < 0 else 'stoupla'} o {money(abs(change), watch.currency)}")
         if role == Qt.ItemDataRole.ToolTipRole:
             return (f"Cena zjištěna: {local_time(watch.latest_at)}\n"
+                    f"{trend} (oproti předchozí získané ceně)\n"
                     f"Minimum zjištěno: {local_time(watch.minimum_at)}\n"
                     f"{watch.last_error or STATUS_LABELS.get(watch.last_status, '')}")
+        if role == Qt.ItemDataRole.ForegroundRole and index.column() == 2 and change:
+            return QColor("#187044" if change < 0 else "#a13b2c")
         if role == Qt.ItemDataRole.ForegroundRole and index.column() == 3 and watch.last_status == "error":
             return QColor("#a13b2c")
         if role != Qt.ItemDataRole.DisplayRole:
@@ -53,7 +61,7 @@ class WatchesModel(QAbstractTableModel):
         return (
             f"{watch.origin} → {watch.destination}\n{watch.flight_number}",
             datetime.fromisoformat(watch.departure_local).strftime("%d. %m. %Y\n%H:%M"),
-            price_summary(watch),
+            marker + price_summary(watch),
             f"{status}\n{local_time(watch.checked_at)}",
             local_time(watch.next_check_at) if watch.state == "active" else "—",
         )[index.column()]
