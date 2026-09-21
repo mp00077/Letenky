@@ -4,6 +4,8 @@ from PySide6.QtCharts import QChart, QChartView, QDateTimeAxis, QLineSeries, QSc
 from PySide6.QtCore import QDateTime, Qt
 from PySide6.QtGui import QColor, QPainter, QPen
 
+from letenky.domain.price import local_time, money
+
 
 class PriceChart(QChartView):
     def __init__(self, rows, currency, parent=None):
@@ -30,6 +32,13 @@ class PriceChart(QChartView):
         if not points:
             chart.setTitle("Zatím nejsou k dispozici cenová měření")
             return
+        priced_rows = [row for row in rows if row["amount_minor"] is not None]
+        lowest = min(priced_rows, key=lambda row: (row["amount_minor"], row["observed_at"]))
+        highest = min(priced_rows, key=lambda row: (-row["amount_minor"], row["observed_at"]))
+        chart.setTitle(
+            f"Nejnižší: {money(lowest['amount_minor'], currency)} · {local_time(lowest['observed_at'])}<br>"
+            f"Nejvyšší: {money(highest['amount_minor'], currency)} · {local_time(highest['observed_at'])}"
+        )
         axis_x = QDateTimeAxis()
         axis_x.setFormat("dd. MM. HH:mm")
         axis_x.setTickCount(4)

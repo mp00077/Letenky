@@ -69,6 +69,32 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(results, [(42, self.app.thread())])
         self.assertFalse(self.window.context.tasks.busy)
 
+    def test_chart_extremes_and_pdf_export(self):
+        from PySide6.QtPdf import QPdfDocument
+        from letenky.gui.pdf_export import export_chart_pdf
+        from letenky.gui.widgets.price_chart import PriceChart
+        repo = self.window.context.watches
+        offer = sample_offer()
+        wid = repo.add(offer)
+        for i, amount in enumerate((52000, 62000), 1):
+            measured = offer.observed_at + timedelta(hours=i)
+            repo.record_check(repo.get(wid), measured, measured, "ok",
+                              offer=replace(offer, observed_at=measured, amount_minor=amount))
+        rows = self.window.context.observations.history(wid)
+        chart = PriceChart(rows, "CZK")
+        self.assertIn("Nejnižší: 520 Kč", chart.chart().title())
+        self.assertIn("Nejvyšší: 620 Kč", chart.chart().title())
+        chart.deleteLater()
+        path = Path(self.directory.name) / "chart.pdf"
+        export_chart_pdf(path, repo.get(wid), rows)
+        document = QPdfDocument(self.window)
+        self.assertEqual(document.load(str(path)), QPdfDocument.Error.None_)
+        self.assertEqual(document.pageCount(), 1)
+        self.assertGreater(path.stat().st_size, 1000)
+        document.close()
+        with self.assertRaises(OSError):
+            export_chart_pdf(Path(self.directory.name) / "missing" / "chart.pdf", repo.get(wid), rows)
+
     def test_price_trend_uses_last_two_prices_and_survives_failed_check(self):
         repo = self.window.context.watches
         offer = sample_offer()

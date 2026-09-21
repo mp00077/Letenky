@@ -2,6 +2,11 @@
 
 Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoře.
 
+## 2026-09-21
+
+- Graf v detailu letu zobrazuje nejnižší i nejvyšší získanou cenu s datem měření.
+- Přidán export grafu do PDF včetně trasy, data odletu a cenových extrémů; soubor se ukládá atomicky, chyby exportu se zobrazují v dialogu.
+
 ## 2026-09-17
 
 - V hlavním seznamu sledovaných letů přidáno zelené označení a šipka dolů při poklesu ceny, červené označení a šipka nahoru při růstu. Porovnávají se poslední dvě získané ceny; nezměněná cena je neutrální a tooltip uvádí rozdíl.
