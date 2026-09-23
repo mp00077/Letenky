@@ -2,6 +2,12 @@
 
 Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoře.
 
+## 2026-09-23
+
+- Git commit v okně O aplikaci zkrácen na 8 znaků, celý hash je dostupný po najetí myší. Doplněny ikony ICO/ICNS/PNG ze stejného SVG jako ikona okna a jejich použití při balení aplikace.
+- Okno O aplikaci doplněno o datum sestavení, verzi Pythonu, Git tag a commit. Build ukládá metadata do distribuce pro offline zobrazení bez Gitu; vývojová verze čte místní repozitář a označuje necommitované změny.
+- Přidána nabídka Nápověda → O aplikaci se samostatným UI oknem a autorem Miroslavem Pospíšilem; kliknutí na jméno otevře https://mp00077.github.io.
+
 ## 2026-09-21
 
 - Graf v detailu letu zobrazuje nejnižší i nejvyšší získanou cenu s datem měření.

@@ -31,7 +31,18 @@
     <item><widget class="QLabel" name="sourceLabel"><property name="text"><string>Orientační nabídky Ryanair Fare Finder · 1 dospělý · základní tarif. Zdroj nemusí obsahovat všechny lety; konečnou cenu ověřte u dopravce.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menubar">
+   <widget class="QMenu" name="helpMenu">
+    <property name="title"><string>Nápověda</string></property>
+    <addaction name="aboutAction"/>
+   </widget>
+   <addaction name="helpMenu"/>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="aboutAction">
+   <property name="text"><string>O aplikaci…</string></property>
+   <property name="menuRole"><enum>QAction::AboutRole</enum></property>
+  </action>
  </widget>
  <resources/>
  <connections/>

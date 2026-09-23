@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AboutDialog</class>
+ <widget class="QDialog" name="AboutDialog">
+  <property name="windowTitle"><string>O aplikaci</string></property>
+  <property name="minimumSize"><size><width>420</width><height>180</height></size></property>
+  <layout class="QVBoxLayout" name="layout">
+   <property name="spacing"><number>18</number></property>
+   <property name="leftMargin"><number>24</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>24</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <item><widget class="QLabel" name="heading"><property name="text"><string>Letenky</string></property></widget></item>
+   <item><widget class="QLabel" name="authorLabel">
+    <property name="text"><string>Autor: &lt;a href="https://mp00077.github.io"&gt;Miroslav Pospíšil&lt;/a&gt;</string></property>
+    <property name="textFormat"><enum>Qt::RichText</enum></property>
+    <property name="openExternalLinks"><bool>true</bool></property>
+    <property name="textInteractionFlags"><set>Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard</set></property>
+    <property name="wordWrap"><bool>true</bool></property>
+   </widget></item>
+   <item><widget class="QLabel" name="buildDateLabel"/></item>
+   <item><widget class="QLabel" name="pythonLabel"/></item>
+   <item><widget class="QLabel" name="gitTagLabel"><property name="textFormat"><enum>Qt::PlainText</enum></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+   <item><widget class="QLabel" name="gitCommitLabel"><property name="textFormat"><enum>Qt::PlainText</enum></property><property name="textInteractionFlags"><set>Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard</set></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+   <item><widget class="QDialogButtonBox" name="buttonBox"><property name="standardButtons"><set>QDialogButtonBox::Close</set></property></widget></item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

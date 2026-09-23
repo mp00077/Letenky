@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
         self.ui.detailButton.clicked.connect(self.show_detail)
         self.ui.settingsButton.clicked.connect(self.show_settings)
         self.ui.quitButton.clicked.connect(self.request_quit)
+        self.ui.aboutAction.triggered.connect(self.show_about)
         context.scheduler.changed.connect(self.refresh)
         context.tasks.failed.connect(self.show_error)
         self.tray = create_tray(self)
@@ -136,6 +137,12 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self.context.settings, self.context.directory, self.context.watches, self)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             self.context.scheduler.tick()
+        dialog.deleteLater()
+
+    def show_about(self):
+        from letenky.gui.dialogs.about import AboutDialog
+        dialog = AboutDialog(self)
+        dialog.exec()
         dialog.deleteLater()
 
     def show_error(self, message):

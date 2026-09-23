@@ -2,11 +2,13 @@
 import os
 from pathlib import Path
 import platform
+import shutil
 import subprocess
 import sys
 import tempfile
 
 from generate_ui import ROOT, generate
+from generate_icons import generate as generate_icons
 
 
 def build():
@@ -24,8 +26,11 @@ def build():
                 raise SystemExit("Před buildem ukončete Letenky i v systémové liště. "
                                  "Výstupní aplikace je spuštěná nebo není zapisovatelná.")
     generate()
+    generate_icons()
     environment = os.environ.copy()
     environment["PYTHONUTF8"] = "1"
+    # Preserve Git's location before sanitizing PATH for Qt DLL loading.
+    environment["LETENKY_GIT_EXECUTABLE"] = shutil.which("git") or "git"
     if sys.platform == "win32":
         # Do not let unrelated tools on PATH supply Qt's ICU/SSL DLLs.
         # Windows supplies its own ICU; Poppler/Conda copies can be ABI-incompatible.
