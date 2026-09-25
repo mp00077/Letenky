@@ -10,8 +10,13 @@ root = Path(SPECPATH).parent
 metadata_module = runpy.run_path(str(root / 'src/letenky/infrastructure/build_info.py'))
 metadata_path = Path(workpath) / 'build_info.json'
 metadata_path.parent.mkdir(parents=True, exist_ok=True)
-metadata_path.write_text(json.dumps(metadata_module['collect_build_info'](root, built=True),
+metadata = metadata_module['collect_build_info'](root, built=True)
+metadata_path.write_text(json.dumps(metadata,
                                     ensure_ascii=False), encoding='utf-8')
+version_file = None
+if sys.platform == 'win32':
+    version_module = runpy.run_path(str(root / 'scripts/windows_version.py'))
+    version_file = version_module['write_version_info'](Path(workpath) / 'windows_version.txt', metadata)
 datas = [
     (str(root / 'resources/icons/plane.png'), 'icons'),
     (str(metadata_path), 'letenky/infrastructure'),
@@ -30,6 +35,7 @@ a = Analysis([str(root / 'packaging/entrypoint.py')], pathex=[str(root / 'src')]
                        'PySide6.QtQml', 'PySide6.QtQuick'], noarchive=False)
 pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='Letenky',
+          version=version_file,
           icon=str(root / 'resources/icons/plane.ico') if sys.platform == 'win32' else None,
           debug=False, bootloader_ignore_signals=False, strip=False, upx=False,
           console=os.environ.get('LETENKY_BUILD_CONSOLE') == '1', disable_windowed_traceback=False,

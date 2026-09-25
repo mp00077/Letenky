@@ -2,6 +2,10 @@
 
 Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoře.
 
+## 2026-09-24
+
+- Windows build vkládá do EXE verzi produktu z Git tagu, autorská práva „M. Pospíšil“ a popis „Hlídač cen letenek Ryanair“. Bez tagu je verze produktu označena „Bez tagu“; číselná verze používá 0.0.0.0, pokud tag nelze převést na číselnou verzi Windows.
+
 ## 2026-09-23
 
 - Git commit v okně O aplikaci zkrácen na 8 znaků, celý hash je dostupný po najetí myší. Doplněny ikony ICO/ICNS/PNG ze stejného SVG jako ikona okna a jejich použití při balení aplikace.
