@@ -18,6 +18,7 @@ if sys.platform == 'win32':
     version_module = runpy.run_path(str(root / 'scripts/windows_version.py'))
     version_file = version_module['write_version_info'](Path(workpath) / 'windows_version.txt', metadata)
 datas = [
+    (str(root / 'resources/icons/plane.ico'), 'icons'),
     (str(root / 'resources/icons/plane.png'), 'icons'),
     (str(metadata_path), 'letenky/infrastructure'),
     (str(root / 'src/letenky/storage/migrations'), 'letenky/storage/migrations'),

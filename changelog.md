@@ -2,6 +2,10 @@
 
 Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoře.
 
+## 2026-09-25
+
+- Znovu vygenerována ikona plane.ico ze souboru plane.svg (velikosti 16 až 256 px) a přidána jako samostatný soubor do složky icons v distribučních datech; nadále slouží také jako ikona Windows EXE.
+
 ## 2026-09-24
 
 - Windows build vkládá do EXE verzi produktu z Git tagu, autorská práva „M. Pospíšil“ a popis „Hlídač cen letenek Ryanair“. Bez tagu je verze produktu označena „Bez tagu“; číselná verze používá 0.0.0.0, pokud tag nelze převést na číselnou verzi Windows.
