@@ -37,7 +37,28 @@ class WatchRepository:
                 db.execute("UPDATE watches SET next_check_at=? WHERE id=?",
                            (timestamp(max(now, due)), row["id"]))
 
-    def add(self, offer):
+    def tabs(self):
+        with self.database.connect() as db:
+            return [(row["id"], row["name"]) for row in db.execute("SELECT id,name FROM watch_tabs ORDER BY id")]
+
+    def save_tab(self, name, tab_id=None):
+        name = name.strip()
+        if not 1 <= len(name) <= 60:
+            raise ValueError("Název karty musí mít 1 až 60 znaků.")
+        try:
+            with self.database.connect() as db:
+                if tab_id is None:
+                    return db.execute("INSERT INTO watch_tabs(name) VALUES (?)", (name,)).lastrowid
+                db.execute("UPDATE watch_tabs SET name=? WHERE id=?", (name, tab_id))
+                return tab_id
+        except sqlite3.IntegrityError as exc:
+            raise ValueError("Karta s tímto názvem již existuje.") from exc
+
+    def move_to_tab(self, watch_id, tab_id):
+        with self.database.connect() as db:
+            db.execute("UPDATE watches SET tab_id=? WHERE id=?", (tab_id, watch_id))
+
+    def add(self, offer, tab_id=1):
         now = timestamp(offer.observed_at)
         try:
             with self.database.connect() as db:
@@ -53,10 +74,10 @@ class WatchRepository:
                     AND departure_date=? AND flight_number=?""", (offer.origin, offer.destination,
                     offer.departure.date().isoformat(), offer.flight_number)).fetchone()[0]
                 watch_id = db.execute("""INSERT INTO watches
-                    (flight_id,currency,source,created_at,next_check_at,instance_key) VALUES (?,?,?,?,?,?)""",
+                    (flight_id,currency,source,created_at,next_check_at,instance_key,tab_id) VALUES (?,?,?,?,?,?,?)""",
                     (flight_id, offer.currency, offer.source, now,
                      timestamp(offer.observed_at + timedelta(minutes=self._interval_minutes(db))),
-                     uuid4().hex)).lastrowid
+                     uuid4().hex, tab_id)).lastrowid
                 run_id = db.execute("""INSERT INTO check_runs
                     (watch_id,started_at,finished_at,status) VALUES (?,?,?,'ok')""",
                     (watch_id, now, now)).lastrowid
@@ -77,7 +98,7 @@ class WatchRepository:
 
     def list(self):
         with self.database.connect() as db:
-            rows = db.execute("""SELECT w.id,w.instance_key,w.flight_id,f.origin,f.destination,f.departure_date,
+            rows = db.execute("""SELECT w.id,w.instance_key,COALESCE(w.tab_id,1) tab_id,w.flight_id,f.origin,f.destination,f.departure_date,
                 f.flight_number,f.departure_local,f.departure_utc,w.currency,w.state,w.next_check_at,
                 c.status last_status,c.error last_error,c.finished_at checked_at,
                 p.amount_minor latest_amount,p.observed_at latest_at,

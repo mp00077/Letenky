@@ -7,7 +7,7 @@ from letenky.gui.generated.ui_add_watch import Ui_AddWatchDialog
 
 
 class AddWatchDialog(QDialog):
-    def __init__(self, search, watch_service, tasks, currency, parent=None):
+    def __init__(self, search, watch_service, tasks, currency, parent=None, *, tab_id=1):
         super().__init__(parent)
         self.ui = Ui_AddWatchDialog()
         self.ui.setupUi(self)
@@ -15,6 +15,7 @@ class AddWatchDialog(QDialog):
         self.offers = []
         self.busy = False
         self.watch_id = None
+        self.tab_id = tab_id
         for combo in (self.ui.originCombo, self.ui.destinationCombo):
             combo.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
             for airport in search.provider.airports():
@@ -91,7 +92,7 @@ class AddWatchDialog(QDialog):
         if index < 0:
             return
         try:
-            self.watch_id = self.watch_service.add(self.offers[index])
+            self.watch_id = self.watch_service.add(self.offers[index], tab_id=self.tab_id)
         except Exception as exc:
             self.ui.messageLabel.setText(str(exc))
             return

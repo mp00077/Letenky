@@ -7,13 +7,13 @@ class WatchService:
     def __init__(self, repository):
         self.repository = repository
 
-    def add(self, offer):
+    def add(self, offer, tab_id=1):
         now = utc_now()
         if offer.departure <= now:
             raise ValueError("Tento let již odletěl.")
         if now - offer.observed_at > timedelta(minutes=15):
             raise ValueError("Výsledek hledání je starší než 15 minut. Vyhledejte let znovu.")
-        return self.repository.add(offer)
+        return self.repository.add(offer, tab_id=tab_id)
 
     def delete(self, watch_id):
         return self.repository.delete(watch_id)

@@ -69,6 +69,35 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(results, [(42, self.app.thread())])
         self.assertFalse(self.window.context.tasks.busy)
 
+    def test_tabs_filter_move_and_persist_without_affecting_checks(self):
+        from letenky.storage.repositories.watches import WatchRepository
+        repo = self.window.context.watches
+        offer = sample_offer()
+        first = repo.add(offer)
+        tab = repo.save_tab("Londýn")
+        second = repo.add(replace(offer, flight_number="FR999"), tab_id=tab)
+        self.window.reload_tabs(tab)
+        self.window.refresh()
+        self.assertEqual([w.id for w in self.window.model.watches], [second])
+        due = repo.due(offer.observed_at + timedelta(hours=4))
+        self.assertEqual({w.id for w in due}, {first, second})
+        before = self.window.context.observations.history(first)
+        repo.move_to_tab(first, tab)
+        self.window.refresh()
+        self.assertEqual({w.id for w in self.window.model.watches}, {first, second})
+        self.assertEqual(self.window.context.observations.history(first), before)
+        repo.save_tab("Dovolená", tab)
+        reopened = WatchRepository(Database(self.database.path))
+        self.assertIn((tab, "Dovolená"), reopened.tabs())
+        self.assertEqual(reopened.get(first).tab_id, tab)
+        for name in ("   ", "a" * 61, "Dovolená"):
+            with self.assertRaises(ValueError):
+                repo.save_tab(name)
+        self.window.reload_tabs(1)
+        self.window.refresh()
+        self.assertTrue(self.window.ui.emptyLabel.isVisible())
+        self.assertFalse(self.window.ui.moveTabButton.isEnabled())
+
     def test_chart_extremes_and_pdf_export(self):
         from PySide6.QtPdf import QPdfDocument
         from letenky.gui.pdf_export import export_chart_pdf

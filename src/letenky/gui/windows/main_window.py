@@ -1,6 +1,6 @@
 from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QDialog, QHeaderView, QMainWindow, QMessageBox
+from PySide6.QtWidgets import QApplication, QDialog, QHeaderView, QInputDialog, QMainWindow, QMessageBox
 
 from letenky.domain.price import utc_now
 from letenky.gui.generated.ui_main_window import Ui_MainWindow
@@ -16,6 +16,11 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(":/icons/plane.svg"))
         self.model = WatchesModel(self)
+        self.reload_tabs()
+        self.ui.watchTabs.currentChanged.connect(self.refresh)
+        self.ui.addTabButton.clicked.connect(lambda: self.edit_tab())
+        self.ui.renameTabButton.clicked.connect(lambda: self.edit_tab(rename=True))
+        self.ui.moveTabButton.clicked.connect(self.move_to_tab)
         self.ui.table.setModel(self.model)
         header = self.ui.table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
@@ -39,13 +44,59 @@ class MainWindow(QMainWindow):
         self._tray_notice = False
         self.refresh()
 
+    def current_tab_id(self):
+        return self.ui.watchTabs.tabData(self.ui.watchTabs.currentIndex()) or 1
+
+    def reload_tabs(self, selected_id=None):
+        selected_id = selected_id or self.current_tab_id()
+        bar = self.ui.watchTabs
+        bar.blockSignals(True)
+        while bar.count():
+            bar.removeTab(0)
+        for tab_id, name in self.context.watches.tabs():
+            index = bar.addTab(name.replace("&", "&&"))
+            bar.setTabData(index, tab_id)
+            if tab_id == selected_id:
+                bar.setCurrentIndex(index)
+        bar.blockSignals(False)
+
+    def edit_tab(self, rename=False):
+        tab_id = self.current_tab_id() if rename else None
+        current = dict(self.context.watches.tabs()).get(tab_id, "")
+        name, accepted = QInputDialog.getText(self, "Přejmenovat kartu" if rename else "Nová karta",
+                                              "Název karty:", text=current)
+        if not accepted:
+            return
+        try:
+            tab_id = self.context.watches.save_tab(name, tab_id)
+        except (ValueError, OSError) as exc:
+            self.show_error(str(exc))
+            return
+        self.reload_tabs(tab_id)
+        self.refresh()
+
+    def move_to_tab(self):
+        watch = self.selected()
+        if watch is None:
+            return
+        tabs = [(tid, name) for tid, name in self.context.watches.tabs() if tid != watch.tab_id]
+        if not tabs:
+            return
+        name, accepted = QInputDialog.getItem(self, "Přesunout sledování", "Cílová karta:",
+                                             [name for _, name in tabs], 0, False)
+        if accepted:
+            tab_id = next(tid for tid, label in tabs if label == name)
+            self.context.watches.move_to_tab(watch.id, tab_id)
+            self.reload_tabs(tab_id)
+            self.refresh()
+
     def selected(self):
         index = self.ui.table.currentIndex()
         return self.model.watches[index.row()] if index.isValid() and index.row() < len(self.model.watches) else None
 
     def refresh(self):
         selected = self.selected()
-        watches = self.context.watches.list()
+        watches = [watch for watch in self.context.watches.list() if watch.tab_id == self.current_tab_id()]
         self.model.replace(watches, self.context.scheduler.in_flight)
         if selected:
             row = next((i for i, watch in enumerate(watches) if watch.id == selected.id), None)
@@ -62,6 +113,7 @@ class MainWindow(QMainWindow):
 
     def update_actions(self, *_):
         watch = self.selected()
+        self.ui.moveTabButton.setEnabled(watch is not None and self.ui.watchTabs.count() > 1)
         busy = watch is not None and watch.id in self.context.scheduler.in_flight
         self.ui.detailButton.setEnabled(watch is not None)
         self.ui.checkButton.setEnabled(watch is not None and watch.state == "active" and not busy)
@@ -73,7 +125,7 @@ class MainWindow(QMainWindow):
     def add_watch(self):
         from letenky.gui.dialogs.add_watch import AddWatchDialog
         dialog = AddWatchDialog(self.context.search, self.context.watch_service, self.context.tasks,
-                                self.context.settings.currency, self)
+                                self.context.settings.currency, self, tab_id=self.current_tab_id())
         if dialog.exec() == QDialog.DialogCode.Accepted:
             self.refresh()
             for row, watch in enumerate(self.model.watches):

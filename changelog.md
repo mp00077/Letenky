@@ -2,6 +2,10 @@
 
 Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoře.
 
+## 2026-09-30
+
+- Přidány pojmenované karty sledovaných letů, jejich přejmenování a přesun sledování mezi kartami. Nová sledování se ukládají do otevřené karty; stávající lety jsou v kartě Ostatní. Rozdělení se ukládá v databázi a kontroly běží pro všechny karty.
+
 ## 2026-09-25
 
 - Znovu vygenerována ikona plane.ico ze souboru plane.svg (velikosti 16 až 256 px) a přidána jako samostatný soubor do složky icons v distribučních datech; nadále slouží také jako ikona Windows EXE.
