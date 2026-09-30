@@ -1,6 +1,6 @@
 from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QDialog, QHeaderView, QInputDialog, QMainWindow, QMessageBox
+from PySide6.QtWidgets import QApplication, QDialog, QHeaderView, QInputDialog, QMainWindow, QMenu, QMessageBox, QToolButton
 
 from letenky.domain.price import utc_now
 from letenky.gui.generated.ui_main_window import Ui_MainWindow
@@ -19,8 +19,15 @@ class MainWindow(QMainWindow):
         self.reload_tabs()
         self.ui.watchTabs.currentChanged.connect(self.refresh)
         self.ui.addTabButton.clicked.connect(lambda: self.edit_tab())
-        self.ui.renameTabButton.clicked.connect(lambda: self.edit_tab(rename=True))
-        self.ui.moveTabButton.clicked.connect(self.move_to_tab)
+        self.tab_menu = QMenu(self)
+        self.rename_tab_action = self.tab_menu.addAction("Přejmenovat kartu…")
+        self.rename_tab_action.triggered.connect(lambda: self.edit_tab(rename=True))
+        self.move_tab_action = self.tab_menu.addAction("Přesunout vybraný let do karty…")
+        self.move_tab_action.triggered.connect(self.move_to_tab)
+        self.ui.tabMenuButton.setMenu(self.tab_menu)
+        self.ui.tabMenuButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.ui.tabsLayout.setStretch(0, 1)
+        self.ui.watchTabs.tabBarDoubleClicked.connect(self.rename_clicked_tab)
         self.ui.table.setModel(self.model)
         header = self.ui.table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
@@ -59,6 +66,11 @@ class MainWindow(QMainWindow):
             if tab_id == selected_id:
                 bar.setCurrentIndex(index)
         bar.blockSignals(False)
+
+    def rename_clicked_tab(self, index):
+        if index >= 0:
+            self.ui.watchTabs.setCurrentIndex(index)
+            self.edit_tab(rename=True)
 
     def edit_tab(self, rename=False):
         tab_id = self.current_tab_id() if rename else None
@@ -113,7 +125,7 @@ class MainWindow(QMainWindow):
 
     def update_actions(self, *_):
         watch = self.selected()
-        self.ui.moveTabButton.setEnabled(watch is not None and self.ui.watchTabs.count() > 1)
+        self.move_tab_action.setEnabled(watch is not None and self.ui.watchTabs.count() > 1)
         busy = watch is not None and watch.id in self.context.scheduler.in_flight
         self.ui.detailButton.setEnabled(watch is not None)
         self.ui.checkButton.setEnabled(watch is not None and watch.state == "active" and not busy)

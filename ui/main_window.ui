@@ -18,9 +18,8 @@
     <item><widget class="QLabel" name="subtitle"><property name="text"><string>Cena pod dohledem. Automatické kontroly při spuštěné aplikaci.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
     <item><layout class="QHBoxLayout" name="tabsLayout">
      <item><widget class="QTabBar" name="watchTabs"><property name="expanding"><bool>false</bool></property><property name="usesScrollButtons"><bool>true</bool></property></widget></item>
-     <item><widget class="QPushButton" name="addTabButton"><property name="text"><string>+ Karta</string></property></widget></item>
-     <item><widget class="QPushButton" name="renameTabButton"><property name="text"><string>Přejmenovat kartu</string></property></widget></item>
-     <item><widget class="QPushButton" name="moveTabButton"><property name="text"><string>Přesunout let do karty…</string></property></widget></item>
+     <item><widget class="QToolButton" name="addTabButton"><property name="text"><string>+</string></property><property name="toolTip"><string>Přidat kartu</string></property><property name="accessibleName"><string>Přidat kartu</string></property><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property></widget></item>
+     <item><widget class="QToolButton" name="tabMenuButton"><property name="text"><string>⋯</string></property><property name="toolTip"><string>Možnosti karty a vybraného letu</string></property><property name="accessibleName"><string>Možnosti karty a vybraného letu</string></property><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property></widget></item>
     </layout></item>
     <item><widget class="QLabel" name="summaryLabel"><property name="text"><string>Žádná sledování</string></property></widget></item>
     <item><widget class="QLabel" name="emptyLabel"><property name="text"><string>Přidejte první let a začněte sledovat jeho cenu.</string></property><property name="alignment"><set>Qt::AlignCenter</set></property><property name="minimumSize"><size><width>0</width><height>90</height></size></property></widget></item>

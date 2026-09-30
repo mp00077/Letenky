@@ -96,7 +96,7 @@ class GuiTests(unittest.TestCase):
         self.window.reload_tabs(1)
         self.window.refresh()
         self.assertTrue(self.window.ui.emptyLabel.isVisible())
-        self.assertFalse(self.window.ui.moveTabButton.isEnabled())
+        self.assertFalse(self.window.move_tab_action.isEnabled())
 
     def test_chart_extremes_and_pdf_export(self):
         from PySide6.QtPdf import QPdfDocument

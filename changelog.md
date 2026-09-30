@@ -4,6 +4,7 @@ Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoř
 
 ## 2026-09-30
 
+- Ovládání karet zmenšeno na tlačítka + a ⋯; přejmenování a přesun vybraného letu jsou v nabídce, přejmenování lze otevřít také dvojklikem na kartu.
 - Přidány pojmenované karty sledovaných letů, jejich přejmenování a přesun sledování mezi kartami. Nová sledování se ukládají do otevřené karty; stávající lety jsou v kartě Ostatní. Rozdělení se ukládá v databázi a kontroly běží pro všechny karty.
 
 ## 2026-09-25
