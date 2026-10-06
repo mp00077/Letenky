@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         self.refresh()
 
     def current_tab_id(self):
-        return self.ui.watchTabs.tabData(self.ui.watchTabs.currentIndex()) or 1
+        return self.ui.watchTabs.tabData(self.ui.watchTabs.currentIndex())
 
     def reload_tabs(self, selected_id=None):
         selected_id = selected_id or self.current_tab_id()
@@ -107,14 +107,15 @@ class MainWindow(QMainWindow):
 
     def delete_tab(self):
         tab_id = self.current_tab_id()
-        if tab_id == 1:
-            return
         tabs = dict(self.context.watches.tabs())
+        if tab_id not in tabs or len(tabs) <= 1:
+            return
+        destination = next(tid for tid in tabs if tid != tab_id)
         message = QMessageBox(self)
         message.setWindowTitle("Smazat kartu")
         message.setTextFormat(Qt.TextFormat.PlainText)
         message.setText(f"Smazat kartu „{tabs[tab_id]}“?")
-        message.setInformativeText(f"Sledované lety se přesunou do karty „{tabs[1]}“. Historie cen zůstane zachována.")
+        message.setInformativeText(f"Sledované lety se přesunou do karty „{tabs[destination]}“. Historie cen zůstane zachována.")
         delete_button = message.addButton("Smazat kartu", QMessageBox.ButtonRole.DestructiveRole)
         cancel_button = message.addButton("Zrušit", QMessageBox.ButtonRole.RejectRole)
         message.setDefaultButton(cancel_button)
@@ -123,11 +124,11 @@ class MainWindow(QMainWindow):
         if message.clickedButton() != delete_button:
             return
         try:
-            self.context.watches.delete_tab(tab_id)
+            destination = self.context.watches.delete_tab(tab_id)
         except Exception as exc:
             self.show_error(str(exc))
             return
-        self.reload_tabs(1)
+        self.reload_tabs(destination)
         self.refresh()
         self.statusBar().showMessage("Karta byla smazána. Sledování i historie cen zůstaly zachovány.", 8000)
 
@@ -155,8 +156,8 @@ class MainWindow(QMainWindow):
     def update_actions(self, *_):
         watch = self.selected()
         self.move_tab_action.setEnabled(watch is not None and self.ui.watchTabs.count() > 1)
-        self.delete_tab_action.setEnabled(self.current_tab_id() != 1)
-        self.delete_tab_action.setToolTip("Výchozí kartu nelze smazat." if self.current_tab_id() == 1
+        self.delete_tab_action.setEnabled(self.ui.watchTabs.count() > 1)
+        self.delete_tab_action.setToolTip("Poslední kartu nelze smazat." if self.ui.watchTabs.count() <= 1
                                           else "Smazat kartu a přesunout její sledování do výchozí karty.")
         busy = watch is not None and watch.id in self.context.scheduler.in_flight
         self.ui.detailButton.setEnabled(watch is not None)

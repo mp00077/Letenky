@@ -188,6 +188,23 @@ class StorageTests(unittest.TestCase):
         self.assertEqual(self.repo.due(now), [])
         self.assertEqual(len(self.history.history(self.watch_id)), 2)
 
+    def test_delete_original_tab_preserves_legacy_watch_and_future_checks(self):
+        destination = self.repo.save_tab("Dublin")
+        with self.db.connect() as db:
+            db.execute("UPDATE watches SET tab_id=NULL WHERE id=?", (self.watch_id,))
+        before = self.repo.get(self.watch_id)
+        history = self.history.history(self.watch_id)
+        self.assertEqual(self.repo.delete_tab(1), destination)
+        self.assertEqual(self.repo.get(self.watch_id), replace(before, tab_id=destination))
+        self.assertEqual(self.history.history(self.watch_id), history)
+        self.checker([replace(self.offer, flight_number="FR9999")]).check(self.watch_id)
+        self.assertEqual(len(self.repo.list()), 2)
+        self.assertTrue(all(w.tab_id == destination for w in self.repo.list()))
+        reopened = WatchRepository(Database(self.db.path))
+        self.assertEqual(reopened.tabs(), [(destination, "Dublin")])
+        with self.assertRaises(ValueError):
+            reopened.delete_tab(destination)
+
     def test_concurrent_duplicate_check_is_skipped(self):
         entered, release = Event(), Event()
         class SlowProvider:

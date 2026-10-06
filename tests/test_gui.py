@@ -132,6 +132,33 @@ class GuiTests(unittest.TestCase):
         self.assertEqual([w.id for w in self.window.model.watches], [watch_id])
         self.assertFalse(self.window.delete_tab_action.isEnabled())
 
+    def test_delete_empty_renamed_original_tab(self):
+        repo = self.window.context.watches
+        repo.save_tab("Původní", 1)
+        remaining = repo.save_tab("Dublin")
+        self.window.reload_tabs(1)
+        self.window.refresh()
+        self.assertTrue(self.window.ui.emptyLabel.isVisible())
+        self.assertTrue(self.window.delete_tab_action.isEnabled())
+
+        def confirm():
+            dialog = QApplication.activeModalWidget()
+            for button in dialog.buttons():
+                if dialog.buttonRole(button) == QMessageBox.ButtonRole.DestructiveRole:
+                    button.click()
+                    return
+
+        QTimer.singleShot(0, confirm)
+        self.window.delete_tab_action.trigger()
+        self.assertEqual(repo.tabs(), [(remaining, "Dublin")])
+        self.assertEqual(self.window.current_tab_id(), remaining)
+        self.assertFalse(self.window.delete_tab_action.isEnabled())
+        now = utc_now()
+        offer = replace(sample_offer(), observed_at=now, departure=now + timedelta(days=30),
+                        arrival=now + timedelta(days=30, hours=2))
+        watch_id = self.window.context.watch_service.add(offer)
+        self.assertEqual(repo.get(watch_id).tab_id, remaining)
+
     def test_chart_extremes_and_pdf_export(self):
         from PySide6.QtPdf import QPdfDocument
         from letenky.gui.pdf_export import export_chart_pdf

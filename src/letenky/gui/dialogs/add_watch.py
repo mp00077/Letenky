@@ -7,7 +7,7 @@ from letenky.gui.generated.ui_add_watch import Ui_AddWatchDialog
 
 
 class AddWatchDialog(QDialog):
-    def __init__(self, search, watch_service, tasks, currency, parent=None, *, tab_id=1):
+    def __init__(self, search, watch_service, tasks, currency, parent=None, *, tab_id=None):
         super().__init__(parent)
         self.ui = Ui_AddWatchDialog()
         self.ui.setupUi(self)

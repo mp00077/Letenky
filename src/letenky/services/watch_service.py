@@ -7,7 +7,7 @@ class WatchService:
     def __init__(self, repository):
         self.repository = repository
 
-    def add(self, offer, tab_id=1):
+    def add(self, offer, tab_id=None):
         now = utc_now()
         if offer.departure <= now:
             raise ValueError("Tento let již odletěl.")

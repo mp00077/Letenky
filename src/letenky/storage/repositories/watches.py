@@ -59,14 +59,21 @@ class WatchRepository:
             db.execute("UPDATE watches SET tab_id=? WHERE id=?", (tab_id, watch_id))
 
     def delete_tab(self, tab_id):
-        if tab_id == 1:
-            raise ValueError("Výchozí kartu nelze smazat.")
         with self.database.connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            db.execute("UPDATE watches SET tab_id=1 WHERE tab_id=?", (tab_id,))
+            tabs = [row[0] for row in db.execute("SELECT id FROM watch_tabs ORDER BY id")]
+            if tab_id not in tabs:
+                raise ValueError("Karta již neexistuje.")
+            if len(tabs) == 1:
+                raise ValueError("Poslední kartu nelze smazat.")
+            destination = next(tid for tid in tabs if tid != tab_id)
+            # Legacy watches with NULL belong to the first remaining tab.
+            db.execute("UPDATE watches SET tab_id=? WHERE tab_id IS NULL", (tabs[0],))
+            db.execute("UPDATE watches SET tab_id=? WHERE tab_id=?", (destination, tab_id))
             db.execute("DELETE FROM watch_tabs WHERE id=?", (tab_id,))
+            return destination
 
-    def add(self, offer, tab_id=1):
+    def add(self, offer, tab_id=None):
         try:
             with self.database.connect() as db:
                 return self._insert_watch(db, offer, tab_id)
@@ -76,6 +83,8 @@ class WatchRepository:
             raise
 
     def _insert_watch(self, db, offer, tab_id, note=""):
+        if tab_id is None:
+            tab_id = db.execute("SELECT id FROM watch_tabs ORDER BY id LIMIT 1").fetchone()[0]
         now = timestamp(offer.observed_at)
         db.execute("""INSERT INTO flights
             (origin,destination,departure_date,flight_number,departure_local,arrival_local,departure_utc)
@@ -109,7 +118,8 @@ class WatchRepository:
 
     def list(self):
         with self.database.connect() as db:
-            rows = db.execute("""SELECT w.id,w.instance_key,w.note,COALESCE(w.tab_id,1) tab_id,w.flight_id,f.origin,f.destination,f.departure_date,
+            rows = db.execute("""SELECT w.id,w.instance_key,w.note,
+                COALESCE(w.tab_id,(SELECT MIN(id) FROM watch_tabs)) tab_id,w.flight_id,f.origin,f.destination,f.departure_date,
                 f.flight_number,f.departure_local,f.departure_utc,w.currency,w.state,w.next_check_at,
                 c.status last_status,c.error last_error,c.finished_at checked_at,
                 p.amount_minor latest_amount,p.observed_at latest_at,
@@ -142,7 +152,7 @@ class WatchRepository:
     def record_check(self, watch, started_at, finished_at, status, error=None, offer=None, alternative=None):
         with self.database.connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            current = db.execute("SELECT state,COALESCE(tab_id,1) tab_id FROM watches WHERE id=? AND instance_key=?",
+            current = db.execute("SELECT state,COALESCE(tab_id,(SELECT MIN(id) FROM watch_tabs)) tab_id FROM watches WHERE id=? AND instance_key=?",
                                  (watch.id, watch.instance_key)).fetchone()
             if current is None:
                 return False
