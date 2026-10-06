@@ -24,6 +24,9 @@ class MainWindow(QMainWindow):
         self.rename_tab_action.triggered.connect(lambda: self.edit_tab(rename=True))
         self.move_tab_action = self.tab_menu.addAction("Přesunout vybraný let do karty…")
         self.move_tab_action.triggered.connect(self.move_to_tab)
+        self.tab_menu.addSeparator()
+        self.delete_tab_action = self.tab_menu.addAction("Smazat kartu…")
+        self.delete_tab_action.triggered.connect(self.delete_tab)
         self.ui.tabMenuButton.setMenu(self.tab_menu)
         self.ui.tabMenuButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.ui.tabsLayout.setStretch(0, 1)
@@ -102,6 +105,32 @@ class MainWindow(QMainWindow):
             self.reload_tabs(tab_id)
             self.refresh()
 
+    def delete_tab(self):
+        tab_id = self.current_tab_id()
+        if tab_id == 1:
+            return
+        tabs = dict(self.context.watches.tabs())
+        message = QMessageBox(self)
+        message.setWindowTitle("Smazat kartu")
+        message.setTextFormat(Qt.TextFormat.PlainText)
+        message.setText(f"Smazat kartu „{tabs[tab_id]}“?")
+        message.setInformativeText(f"Sledované lety se přesunou do karty „{tabs[1]}“. Historie cen zůstane zachována.")
+        delete_button = message.addButton("Smazat kartu", QMessageBox.ButtonRole.DestructiveRole)
+        cancel_button = message.addButton("Zrušit", QMessageBox.ButtonRole.RejectRole)
+        message.setDefaultButton(cancel_button)
+        message.setEscapeButton(cancel_button)
+        message.exec()
+        if message.clickedButton() != delete_button:
+            return
+        try:
+            self.context.watches.delete_tab(tab_id)
+        except Exception as exc:
+            self.show_error(str(exc))
+            return
+        self.reload_tabs(1)
+        self.refresh()
+        self.statusBar().showMessage("Karta byla smazána. Sledování i historie cen zůstaly zachovány.", 8000)
+
     def selected(self):
         index = self.ui.table.currentIndex()
         return self.model.watches[index.row()] if index.isValid() and index.row() < len(self.model.watches) else None
@@ -126,6 +155,9 @@ class MainWindow(QMainWindow):
     def update_actions(self, *_):
         watch = self.selected()
         self.move_tab_action.setEnabled(watch is not None and self.ui.watchTabs.count() > 1)
+        self.delete_tab_action.setEnabled(self.current_tab_id() != 1)
+        self.delete_tab_action.setToolTip("Výchozí kartu nelze smazat." if self.current_tab_id() == 1
+                                          else "Smazat kartu a přesunout její sledování do výchozí karty.")
         busy = watch is not None and watch.id in self.context.scheduler.in_flight
         self.ui.detailButton.setEnabled(watch is not None)
         self.ui.checkButton.setEnabled(watch is not None and watch.state == "active" and not busy)

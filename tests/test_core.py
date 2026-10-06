@@ -134,6 +134,53 @@ class StorageTests(unittest.TestCase):
         self.repo.set_paused(self.watch_id, False, NOW)
         self.assertEqual(self.repo.get(self.watch_id).state, "completed")
 
+    def test_missing_flight_adds_daily_offer_to_same_tab_once(self):
+        tab = self.repo.save_tab("Dublin")
+        self.repo.move_to_tab(self.watch_id, tab)
+        # The old historical price cannot tell us the missing flight's current price.
+        alternative = replace(self.offer, flight_number="FR9999", amount_minor=60000,
+                              observed_at=NOW + timedelta(hours=3))
+        checker = self.checker([alternative])
+        checker.check(self.watch_id)
+        checker.check(self.watch_id)
+        self.assertEqual(len(self.repo.list()), 2)
+        new = next(w for w in self.repo.list() if w.id != self.watch_id)
+        self.assertEqual(new.tab_id, tab)
+        self.assertEqual(new.note, "Nalezen levnější let")
+        self.assertEqual(new.latest_amount, 60000)
+        self.assertEqual(len(self.history.history(new.id)), 1)
+        self.assertEqual(self.repo.get(self.watch_id).latest_amount, self.offer.amount_minor)
+        self.assertEqual(self.repo.get(self.watch_id).last_status, "not_offered")
+        self.repo.set_paused(new.id, True, NOW)
+        checker.check(self.watch_id)
+        self.assertEqual(self.repo.get(new.id).state, "paused")
+
+    def test_alternative_rejects_wrong_route_day_currency_and_departed(self):
+        base = replace(self.offer, flight_number="FR9999")
+        for candidate in (replace(base, destination="DUB"), replace(base, currency="EUR"),
+                          replace(base, departure=base.departure + timedelta(days=1)),
+                          replace(base, departure=base.departure - timedelta(days=90))):
+            self.checker([candidate]).check(self.watch_id)
+            self.assertEqual(len(self.repo.list()), 1)
+        self.checker([self.offer, base]).check(self.watch_id)
+        self.assertEqual(len(self.repo.list()), 1)
+        self.checker([]).check(self.watch_id)
+        self.assertEqual(len(self.repo.list()), 1)
+
+    def test_deleted_parent_cannot_create_alternative(self):
+        watch = self.repo.get(self.watch_id)
+        self.repo.delete(watch.id)
+        self.assertFalse(self.repo.record_check(watch, NOW, NOW, "not_offered",
+                         alternative=replace(self.offer, flight_number="FR9999")))
+        self.assertEqual(self.repo.list(), [])
+
+    def test_alternative_save_and_original_check_are_atomic(self):
+        with patch.object(self.repo, "insert_observation", side_effect=RuntimeError("storage failed")):
+            with self.assertRaises(RuntimeError):
+                self.checker([replace(self.offer, flight_number="FR9999")]).check(self.watch_id)
+        self.assertEqual(len(self.repo.list()), 1)
+        self.assertEqual(len(self.history.history(self.watch_id)), 1)
+
     def test_missed_checks_run_once(self):
         now = NOW + timedelta(days=4)
         self.assertEqual(len(self.repo.due(now)), 1)

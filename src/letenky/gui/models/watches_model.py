@@ -8,7 +8,7 @@ from letenky.services.price_history import STATUS_LABELS, price_summary
 
 
 class WatchesModel(QAbstractTableModel):
-    headers = ("Trasa / let", "Odlet · místní čas", "Poslední cena (historické minimum)", "Kontrola / stav", "Další kontrola")
+    headers = ("Trasa / let", "Odlet · místní čas", "Poslední cena (historické minimum)", "Kontrola / stav", "Další kontrola", "Poznámka")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -43,6 +43,7 @@ class WatchesModel(QAbstractTableModel):
             return (f"Cena zjištěna: {local_time(watch.latest_at)}\n"
                     f"{trend} (oproti předchozí získané ceně)\n"
                     f"Minimum zjištěno: {local_time(watch.minimum_at)}\n"
+                    f"{watch.note}\n"
                     f"{watch.last_error or STATUS_LABELS.get(watch.last_status, '')}")
         if role == Qt.ItemDataRole.ForegroundRole and index.column() == 2 and change:
             return QColor("#187044" if change < 0 else "#a13b2c")
@@ -64,4 +65,5 @@ class WatchesModel(QAbstractTableModel):
             marker + price_summary(watch),
             f"{status}\n{local_time(watch.checked_at)}",
             local_time(watch.next_check_at) if watch.state == "active" else "—",
+            watch.note,
         )[index.column()]

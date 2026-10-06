@@ -25,6 +25,7 @@ class PriceChecker:
             if watch is None or watch.state != "active":
                 return False
             started = self.clock()
+            alternative = None
             try:
                 offers = self.provider.search(watch.query)
                 matches = [offer for offer in offers if offer.matches(watch.query)
@@ -33,10 +34,21 @@ class PriceChecker:
                     raise ValueError("Zdroj vrátil nejednoznačnou nabídku stejného letu.")
                 offer = matches[0] if matches else None
                 status, error = ("ok", None) if offer else ("not_offered", None)
+                if offer is None:
+                    candidates = [item for item in offers if item.matches(watch.query)
+                                  and item.source == "ryanair_farefinder"
+                                  and item.flight_number != watch.flight_number
+                                  and item.departure > self.clock()]
+                    alternative = min(candidates, key=lambda item: (item.amount_minor, item.departure,
+                                                                  item.flight_number), default=None)
             except Exception as exc:
                 log.exception("Kontrola sledování %s selhala", watch_id)
-                offer, status, error = None, "error", str(exc)
-            return self.repository.record_check(watch, started, self.clock(), status, error, offer)
+                offer, status, error, alternative = None, "error", str(exc), None
+            finished = self.clock()
+            if alternative is not None and alternative.departure <= finished:
+                alternative = None
+            return self.repository.record_check(watch, started, finished, status, error, offer,
+                                                alternative=alternative)
         finally:
             with self._lock:
                 self._running.discard(watch_id)

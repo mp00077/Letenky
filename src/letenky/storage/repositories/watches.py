@@ -58,35 +58,46 @@ class WatchRepository:
         with self.database.connect() as db:
             db.execute("UPDATE watches SET tab_id=? WHERE id=?", (tab_id, watch_id))
 
+    def delete_tab(self, tab_id):
+        if tab_id == 1:
+            raise ValueError("Výchozí kartu nelze smazat.")
+        with self.database.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            db.execute("UPDATE watches SET tab_id=1 WHERE tab_id=?", (tab_id,))
+            db.execute("DELETE FROM watch_tabs WHERE id=?", (tab_id,))
+
     def add(self, offer, tab_id=1):
-        now = timestamp(offer.observed_at)
         try:
             with self.database.connect() as db:
-                db.execute("""INSERT INTO flights
-                    (origin,destination,departure_date,flight_number,departure_local,arrival_local,departure_utc)
-                    VALUES (?,?,?,?,?,?,?) ON CONFLICT(origin,destination,departure_date,flight_number)
-                    DO UPDATE SET departure_local=excluded.departure_local,
-                    arrival_local=excluded.arrival_local, departure_utc=excluded.departure_utc""",
-                    (offer.origin, offer.destination, offer.departure.date().isoformat(),
-                     offer.flight_number, offer.departure.isoformat(), offer.arrival.isoformat(),
-                     timestamp(offer.departure)))
-                flight_id = db.execute("""SELECT id FROM flights WHERE origin=? AND destination=?
-                    AND departure_date=? AND flight_number=?""", (offer.origin, offer.destination,
-                    offer.departure.date().isoformat(), offer.flight_number)).fetchone()[0]
-                watch_id = db.execute("""INSERT INTO watches
-                    (flight_id,currency,source,created_at,next_check_at,instance_key,tab_id) VALUES (?,?,?,?,?,?,?)""",
-                    (flight_id, offer.currency, offer.source, now,
-                     timestamp(offer.observed_at + timedelta(minutes=self._interval_minutes(db))),
-                     uuid4().hex, tab_id)).lastrowid
-                run_id = db.execute("""INSERT INTO check_runs
-                    (watch_id,started_at,finished_at,status) VALUES (?,?,?,'ok')""",
-                    (watch_id, now, now)).lastrowid
-                self.insert_observation(db, watch_id, flight_id, run_id, offer)
-                return watch_id
+                return self._insert_watch(db, offer, tab_id)
         except sqlite3.IntegrityError as exc:
             if "UNIQUE constraint failed: watches." in str(exc):
                 raise DuplicateWatch("Tento let již sledujete v této měně.") from exc
             raise
+
+    def _insert_watch(self, db, offer, tab_id, note=""):
+        now = timestamp(offer.observed_at)
+        db.execute("""INSERT INTO flights
+            (origin,destination,departure_date,flight_number,departure_local,arrival_local,departure_utc)
+            VALUES (?,?,?,?,?,?,?) ON CONFLICT(origin,destination,departure_date,flight_number)
+            DO UPDATE SET departure_local=excluded.departure_local,
+            arrival_local=excluded.arrival_local, departure_utc=excluded.departure_utc""",
+            (offer.origin, offer.destination, offer.departure.date().isoformat(),
+             offer.flight_number, offer.departure.isoformat(), offer.arrival.isoformat(),
+             timestamp(offer.departure)))
+        flight_id = db.execute("""SELECT id FROM flights WHERE origin=? AND destination=?
+            AND departure_date=? AND flight_number=?""", (offer.origin, offer.destination,
+            offer.departure.date().isoformat(), offer.flight_number)).fetchone()[0]
+        watch_id = db.execute("""INSERT INTO watches
+            (flight_id,currency,source,created_at,next_check_at,instance_key,tab_id,note) VALUES (?,?,?,?,?,?,?,?)""",
+            (flight_id, offer.currency, offer.source, now,
+             timestamp(offer.observed_at + timedelta(minutes=self._interval_minutes(db))),
+             uuid4().hex, tab_id, note)).lastrowid
+        run_id = db.execute("""INSERT INTO check_runs
+            (watch_id,started_at,finished_at,status) VALUES (?,?,?,'ok')""",
+            (watch_id, now, now)).lastrowid
+        self.insert_observation(db, watch_id, flight_id, run_id, offer)
+        return watch_id
 
     @staticmethod
     def insert_observation(db, watch_id, flight_id, run_id, offer):
@@ -98,7 +109,7 @@ class WatchRepository:
 
     def list(self):
         with self.database.connect() as db:
-            rows = db.execute("""SELECT w.id,w.instance_key,COALESCE(w.tab_id,1) tab_id,w.flight_id,f.origin,f.destination,f.departure_date,
+            rows = db.execute("""SELECT w.id,w.instance_key,w.note,COALESCE(w.tab_id,1) tab_id,w.flight_id,f.origin,f.destination,f.departure_date,
                 f.flight_number,f.departure_local,f.departure_utc,w.currency,w.state,w.next_check_at,
                 c.status last_status,c.error last_error,c.finished_at checked_at,
                 p.amount_minor latest_amount,p.observed_at latest_at,
@@ -128,12 +139,23 @@ class WatchRepository:
             db.execute("""UPDATE watches SET state=?,next_check_at=? WHERE id=? AND state!='completed'""",
                        ("paused" if paused else "active", timestamp(now), watch_id))
 
-    def record_check(self, watch, started_at, finished_at, status, error=None, offer=None):
+    def record_check(self, watch, started_at, finished_at, status, error=None, offer=None, alternative=None):
         with self.database.connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            if db.execute("SELECT id FROM watches WHERE id=? AND instance_key=?",
-                          (watch.id, watch.instance_key)).fetchone() is None:
+            current = db.execute("SELECT state,COALESCE(tab_id,1) tab_id FROM watches WHERE id=? AND instance_key=?",
+                                 (watch.id, watch.instance_key)).fetchone()
+            if current is None:
                 return False
+            if alternative is not None and status == "not_offered" and current["state"] == "active":
+                if (not alternative.matches(watch.query) or alternative.flight_number == watch.flight_number
+                        or alternative.departure <= finished_at):
+                    raise ValueError("Alternativní let neodpovídá sledované trase a dni nebo již odletěl.")
+                exists = db.execute("""SELECT w.id FROM watches w JOIN flights f ON f.id=w.flight_id
+                    WHERE f.origin=? AND f.destination=? AND f.departure_date=? AND f.flight_number=?
+                    AND w.currency=?""", (alternative.origin, alternative.destination,
+                    alternative.departure.date().isoformat(), alternative.flight_number, alternative.currency)).fetchone()
+                if exists is None:
+                    self._insert_watch(db, alternative, current["tab_id"], "Nalezen levnější let")
             run_id = db.execute("""INSERT INTO check_runs
                 (watch_id,started_at,finished_at,status,error) VALUES (?,?,?,?,?)""",
                 (watch.id, timestamp(started_at), timestamp(finished_at), status, error)).lastrowid

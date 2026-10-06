@@ -10,8 +10,8 @@ from tests.support import ROOT
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PySide6.QtCore import QCoreApplication, QDate, QEvent, QThread, Qt
-from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QCoreApplication, QDate, QEvent, QThread, QTimer, Qt
+from PySide6.QtWidgets import QApplication, QMessageBox
 from PySide6.QtTest import QTest
 
 from letenky.application import create_window
@@ -97,6 +97,40 @@ class GuiTests(unittest.TestCase):
         self.window.refresh()
         self.assertTrue(self.window.ui.emptyLabel.isVisible())
         self.assertFalse(self.window.move_tab_action.isEnabled())
+
+    def test_delete_tab_cancel_then_preserve_watches_and_history(self):
+        repo = self.window.context.watches
+        self.assertFalse(self.window.delete_tab_action.isEnabled())
+        with self.assertRaises(ValueError):
+            repo.delete_tab(1)
+        repo.save_tab("Moje lety", 1)
+        tab = repo.save_tab("Dublin")
+        watch_id = repo.add(sample_offer(), tab_id=tab)
+        repo.set_paused(watch_id, True, sample_offer().observed_at)
+        watch = repo.get(watch_id)
+        history = self.window.context.observations.history(watch_id)
+        self.window.reload_tabs(tab)
+        self.window.refresh()
+        self.assertTrue(self.window.delete_tab_action.isEnabled())
+
+        def click_role(role):
+            dialog = QApplication.activeModalWidget()
+            for button in dialog.buttons():
+                if dialog.buttonRole(button) == role:
+                    button.click()
+                    return
+
+        QTimer.singleShot(0, lambda: click_role(QMessageBox.ButtonRole.RejectRole))
+        self.window.delete_tab_action.trigger()
+        self.assertIn((tab, "Dublin"), repo.tabs())
+        QTimer.singleShot(0, lambda: click_role(QMessageBox.ButtonRole.DestructiveRole))
+        self.window.delete_tab_action.trigger()
+        self.assertEqual(repo.tabs(), [(1, "Moje lety")])
+        self.assertEqual(repo.get(watch_id), replace(watch, tab_id=1))
+        self.assertEqual(self.window.context.observations.history(watch_id), history)
+        self.assertEqual(self.window.current_tab_id(), 1)
+        self.assertEqual([w.id for w in self.window.model.watches], [watch_id])
+        self.assertFalse(self.window.delete_tab_action.isEnabled())
 
     def test_chart_extremes_and_pdf_export(self):
         from PySide6.QtPdf import QPdfDocument

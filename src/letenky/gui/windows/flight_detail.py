@@ -57,7 +57,8 @@ class FlightDetailDialog(QDialog):
             return
         self._signature = signature
         self.ui.heading.setText(f"{watch.origin} → {watch.destination} · {watch.flight_number}")
-        self.ui.summaryLabel.setText(f"{price_summary(watch)}\nPoslední cena zjištěna: {local_time(watch.latest_at)}")
+        self.ui.summaryLabel.setText(f"{price_summary(watch)}\nPoslední cena zjištěna: {local_time(watch.latest_at)}"
+                                     + (f"\n{watch.note}" if watch.note else ""))
         old_model = self.ui.historyTable.model()
         self.ui.historyTable.setModel(HistoryModel(rows, self))
         if old_model:

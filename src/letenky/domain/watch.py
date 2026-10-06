@@ -27,6 +27,7 @@ class Watch:
     instance_key: str
     previous_amount: int | None = None
     tab_id: int = 1
+    note: str = ""
 
     @property
     def price_change(self) -> int | None:

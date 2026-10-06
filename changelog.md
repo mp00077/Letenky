@@ -2,6 +2,12 @@
 
 Nové změny zapisujeme pod aktuální datum, nejnovější záznamy jsou nahoře.
 
+## 2026-10-06
+
+- Do nabídky ⋯ přidáno „Smazat kartu“. Po potvrzení se lety přesunou do výchozí karty se zachováním historie a nastavení sledování; výchozí kartu nelze smazat.
+- Pokud sledovaný let chybí ve Fare Finderu, aktuální náhradní nabídka pro stejnou trasu, den a měnu se automaticky přidá do stejné karty s poznámkou „Nalezen levnější let“. Historie původního letu zůstává oddělená; existující sledování se neduplikují ani neobnovují z pozastavení.
+- Nová nabídka se neporovnává s historickou cenou původního spoje, jehož aktuální cena není známá. Chyba zdroje ani prázdná nabídka nové sledování nevytváří.
+
 ## 2026-09-30
 
 - Ovládání karet zmenšeno na tlačítka + a ⋯; přejmenování a přesun vybraného letu jsou v nabídce, přejmenování lze otevřít také dvojklikem na kartu.
